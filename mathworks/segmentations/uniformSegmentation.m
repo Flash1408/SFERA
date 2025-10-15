@@ -17,20 +17,24 @@ function changePts = uniformSegmentation(y, t, perc)
     step = round(N * perc / 100); % samples per segment
 
     % Indices where a segment ends
-    changePts = step:step:N;
+    t_init = min(t);
+    if t_init == 0
+        t_init = 1;
+    end
+    changePts = t_init:step:N;
     if changePts(end) ~= N
         changePts = [changePts N]; % ensure last point is included
     end
 
     % Plot
     %t = 1:N;
-    figure
-    plot(t, y, 'DisplayName', 'Signal');
-    hold on
-    xline(changePts, 'r--', 'LineWidth', 1.5, ...
-          'HandleVisibility','off');
-    title(['Uniform segmentation (' num2str(perc) '%)'])
-    legend show
+    % figure
+    % plot(t, y, 'DisplayName', 'Signal');
+    % hold on
+    % xline(changePts, 'r--', 'LineWidth', 1.5, ...
+    %       'HandleVisibility','off');
+    % title(['Uniform segmentation (' num2str(perc) '%)'])
+    % legend show
 end
 
 

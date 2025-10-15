@@ -59,13 +59,13 @@ function changePts = swSegmentation(y, t, metric, winLen, overlap)
     changePts = [changePts(:); N];         % always include the end
     
     % === 4. Plot results ===
-    figure
-    plot(t, y, 'DisplayName', 'Signal');
-    hold on
-    xline(t(changePts), 'r--', 'LineWidth', 1.5, ...
-          'HandleVisibility','off');
-    title(['Sliding-window segmentation (' metric ')'])
-    legend show
+    % figure
+    % plot(t, y, 'DisplayName', 'Signal');
+    % hold on
+    % xline(t(changePts), 'r--', 'LineWidth', 1.5, ...
+    %       'HandleVisibility','off');
+    % title(['Sliding-window segmentation (' metric ')'])
+    % legend show
 end
 
 

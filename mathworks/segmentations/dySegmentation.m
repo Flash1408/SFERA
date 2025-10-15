@@ -42,13 +42,13 @@ function changePts = dySegmentation(y, t)
     changePts = [changePts; length(y)];
     
     % === 5. Plot results ===
-    figure
-    plot(t, y, 'DisplayName', 'Input signal'); % plot original signal
-    legend show
-    hold on
-    xline(t(changePts), 'k--', 'LineWidth', 1.5, ...
-          'HandleVisibility','off');           % vertical lines at change points
-    title('Derivative-based segmentation')
+    % figure
+    % plot(t, y, 'DisplayName', 'Input signal'); % plot original signal
+    % legend show
+    % hold on
+    % xline(t(changePts), 'k--', 'LineWidth', 1.5, ...
+    %       'HandleVisibility','off');           % vertical lines at change points
+    % title('Derivative-based segmentation')
 end
 
 

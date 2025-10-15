@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2014281533" file="C:\Users\s.maatoug\Desktop\mathworks\SFERA beta.prj" location="C:\Users\s.maatoug\Desktop\mathworks" name="SFERA beta" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="101322079" file="C:\Users\s.maatoug\Desktop\mathworks\SFERA beta.prj" location="C:\Users\s.maatoug\Desktop\mathworks" name="SFERA beta" target="target.mlapps" target-name="Package App">
     <param.appname>SFERA beta</param.appname>
     <param.authnamewatermark />
     <param.email />
@@ -8,7 +8,7 @@
     <param.icons />
     <param.summary />
     <param.description />
-    <param.screenshot>C:\Users\s.maatoug\AppData\Local\Temp\tp21fe9186_e7ec_4ecd_be88_1495da224856.png</param.screenshot>
+    <param.screenshot>C:\Users\s.maatoug\AppData\Local\Temp\tp5e34e991_d720_4c49_abe7_bd0fb8d76ba0.png</param.screenshot>
     <param.version>1.0</param.version>
     <param.products.name />
     <param.products.id />
@@ -35,17 +35,7 @@
       <file>${PROJECT_ROOT}\SFERA.mlapp</file>
     </fileset.main>
     <fileset.depfun>
-      <file>${PROJECT_ROOT}\Effects Library\functions\auxfunc\findMaxPeaks.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isArcTanDivergent.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isCubicRadix.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isDampOscillating.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isDivergent.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isDivOscillating.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isExpDivergent.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isFifthRadix.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isMultiSinusoids.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isPermOscillating.m</file>
-      <file>${PROJECT_ROOT}\Effects Library\functions\isRunge.m</file>
+      <file>${PROJECT_ROOT}\others\logo\logo3.png</file>
       <file>${PROJECT_ROOT}\segmentations\dySegmentation.m</file>
       <file>${PROJECT_ROOT}\segmentations\matlabSegmentation.m</file>
       <file>${PROJECT_ROOT}\segmentations\swSegmentation.m</file>

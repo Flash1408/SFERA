@@ -2,9 +2,10 @@
 <MF0 version="1.1" packageUris="http://schema.mathworks.com/mf0/faultinfo_datamodel/R2021a">
   <faultinfo.FaultContainerSet type="faultinfo.FaultContainerSet" uuid="122c0d93-fcca-4e7e-99e6-76c45ce703e5">
     <conditionals type="faultinfo.conditional.Conditional" uuid="5f82bf1a-d4a9-4264-a62a-dd0c654fb233">
-      <checksum>cda5c764-be84-41fc-a317-dadadcb3c713</checksum>
+      <checksum>5ba73bac-8860-4126-8371-6d4487e738a9</checksum>
       <condition>x == true</condition>
-      <mustBeLogged>false</mustBeLogged>
+      <conditionalTriggers type="faultinfo.ConditionalTrigger" uuid="81d7108c-3777-4817-bd01-86c2fa4f25d5"/>
+      <mustBeLogged>true</mustBeLogged>
       <name>SampleConditional</name>
       <resyncRefBlkID></resyncRefBlkID>
       <resyncUUID>00000000-0000-0000-0000-000000000000</resyncUUID>
@@ -33,19 +34,33 @@
       <faultedEntityID>Outport|Ebike:7|1</faultedEntityID>
       <faultedEntityName>Ebike/Zero-Order Hold/Outport/1</faultedEntityName>
       <faults type="faultinfo.SLFault" uuid="479e0998-95d1-4f55-bd68-a0c536710778">
-        <checksum>d01a122c-2160-4863-a2e6-2e05477795fa</checksum>
+        <checksum>2168c830-0e6b-4550-8036-27ec6d5374b8</checksum>
         <faultDescription></faultDescription>
         <faultName>Zero_OrderHold_Outport1_fault</faultName>
         <resyncUUID>00000000-0000-0000-0000-000000000000</resyncUUID>
-        <triggerOn type="faultinfo.TimedTrigger" uuid="1b502276-bab8-4fdd-a610-9dae0b4e511d">
-          <startTime>5.0</startTime>
-          <isPersistent>true</isPersistent>
+        <triggerOn type="faultinfo.ConditionalTrigger" uuid="81d7108c-3777-4817-bd01-86c2fa4f25d5">
+          <isPersistent>false</isPersistent>
         </triggerOn>
       </faults>
       <isEnabled>true</isEnabled>
     </faultContainers>
+    <faultContainers type="faultinfo.FaultContainer" uuid="b11945dd-b1bc-418b-b138-f35b793049b1">
+      <activeFault type="faultinfo.SLFault" uuid="bfa95832-6b6d-4f1d-9ac9-e973f440c697"/>
+      <faultedEntityID>Outport|Ebike:2|1</faultedEntityID>
+      <faultedEntityName>Ebike/Transfer Fcn/Outport/1</faultedEntityName>
+      <faults type="faultinfo.SLFault" uuid="bfa95832-6b6d-4f1d-9ac9-e973f440c697">
+        <checksum>00000000-0000-0000-0000-000000000000</checksum>
+        <faultDescription></faultDescription>
+        <faultName>TransferFcn_Outport1_fault</faultName>
+        <resyncUUID>00000000-0000-0000-0000-000000000000</resyncUUID>
+        <triggerOn type="faultinfo.PermanentTrigger" uuid="1c01c365-9361-426e-96bb-effce3d37814">
+          <isPersistent>true</isPersistent>
+        </triggerOn>
+      </faults>
+      <isEnabled>false</isEnabled>
+    </faultContainers>
     <isEnabled>true</isEnabled>
-    <lastUpdatedAt>2025-10-01T13:11:09</lastUpdatedAt>
+    <lastUpdatedAt>2025-10-14T13:27:14</lastUpdatedAt>
     <modelName>Ebike</modelName>
     <modelUUID>4e2598bb-a0ac-4926-86b1-579a760f56b6</modelUUID>
   </faultinfo.FaultContainerSet>
@@ -64,5 +79,15 @@
     </failureModes>
     <faultModelName>Ebike_FaultModel</faultModelName>
     <faultModelUUID>6198faaa-8db3-4467-bf92-03be6211a62c</faultModelUUID>
+  </faultinfo.FailureModeContainer>
+  <faultinfo.FailureModeContainer type="faultinfo.FailureModeContainer" uuid="acb3adb2-0d19-4187-a9c1-e8cfe25ce585">
+    <failureModes type="faultinfo.FailureMode" uuid="6a43fbd0-28f3-4eb5-9103-ac7e6b2d3e8d">
+      <ID>1</ID>
+      <associatedFaults type="faultinfo.SLFault" uuid="bfa95832-6b6d-4f1d-9ac9-e973f440c697"/>
+      <faultSubsystemName>TransferFcn_Outport1_fault</faultSubsystemName>
+      <resyncUUID>00000000-0000-0000-0000-000000000000</resyncUUID>
+    </failureModes>
+    <faultModelName>Ebike_FaultModel_2</faultModelName>
+    <faultModelUUID>c5f9eba3-6204-468f-bafd-b032a39a68a5</faultModelUUID>
   </faultinfo.FailureModeContainer>
 </MF0>
