@@ -9,26 +9,26 @@ faults = Simulink.fault.findFaults(modelName);
 fm = Simulink.fault.getFaultModels(modelName);
 load_system(fm(1));
 
-allBlocks = find_system(fm(1), 'FollowLinks', 'on', 'LookUnderMasks', 'all');
-for b = 11:length(allBlocks)
-    parts = regexp(allBlocks(b),'/','split'); 
-    if strcmp(parts{1,1}{1,2}, faults(3).Name)
-        try
-            blkType = get_param(allBlocks(b), 'Name');
-        catch
-            blkType = 'Unknown';
-        end
+% allBlocks = find_system(fm(1), 'FollowLinks', 'on', 'LookUnderMasks', 'all');
+% for b = 11:length(allBlocks)
+%     parts = regexp(allBlocks(b),'/','split'); 
+%     if strcmp(parts{1,1}{1,2}, faults(3).Name)
+%         try
+%             blkType = get_param(allBlocks(b), 'Name');
+%         catch
+%             blkType = 'Unknown';
+%         end
+% 
+%         try
+%             params = get_param(allBlocks(b), 'DialogParameters');
+%         catch
+%             params = {};
+%         end
+%     end
+% end
 
-        try
-            params = get_param(allBlocks(b), 'DialogParameters');
-        catch
-            params = {};
-        end
-    end
-end
 
-
-set_param('Ebike_FaultModel/Zero_OrderHold_Outport1_fault/White Noise', 'Mean', '2')
+get_param('Ebike_FaultModel/Zero_OrderHold_Outport1_fault/White Noise', 'Mean')
 componentList = unique({faults.ModelElement});
 selected = 'Ebike/Step/Outport/1';
 filterfaults = faults(strcmp({faults.ModelElement}, selected));
