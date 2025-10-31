@@ -13,11 +13,11 @@ This repository contains the core code, auxiliary functions, and the user manual
 ├── mathworks/                    # Main MATLAB code directory
 │   ├── SFERA_beta.mltbx          # Installation package (beta version)
 │   ├── SFERA_beta.prj            # Installation project file
-│   ├── SFERA_App.mlapp           # App Designer main interface
+│   ├── SFERA.mlapp           # App Designer main interface
 │   ├── help_functions/           # Auxiliary functions (e.g., signal cleaning)
 │   ├── segmentations/            # Signal segmentation routines
 │   ├── images/                   # Tool-related images (e.g., logo)
-│   ├── Effects_Library/          # Functions and Simulink library for effect control
+│   ├── Effects Library/          # Functions and Simulink library for effect control
 │   └── functions/                # Core analysis logic
 │       ├── isDivergent.m         # Main analysis logic file
 │       └── isGenericDiv.m        # Custom analysis prototype (in testing phase)
