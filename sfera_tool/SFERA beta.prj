@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2775946703" file="C:\Users\s.maatoug\Documents\SFERA\mathworks\SFERA beta.prj" location="C:\Users\s.maatoug\Documents\SFERA\mathworks" name="SFERA beta" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2775946703" file="C:\Users\s.maatoug\Documents\SFERA\sfera_tool\SFERA beta.prj" location="C:\Users\s.maatoug\Documents\SFERA\sfera_tool" name="SFERA beta" target="target.mlapps" target-name="Package App">
     <param.appname>SFERA beta</param.appname>
     <param.authnamewatermark />
     <param.email />
@@ -8,7 +8,7 @@
     <param.icons />
     <param.summary />
     <param.description />
-    <param.screenshot>C:\Users\s.maatoug\AppData\Local\Temp\tpc8230afc_d05c_4986_87e9_523d5d678f08.png</param.screenshot>
+    <param.screenshot>C:\Users\s.maatoug\AppData\Local\Temp\tpbeb623be_bf07_49a2_bc06_f8b8f059bfca.png</param.screenshot>
     <param.version>1.0</param.version>
     <param.products.name />
     <param.products.id />
@@ -45,7 +45,8 @@
       <file>${PROJECT_ROOT}\Effects Library\functions\isMultiSinusoids.m</file>
       <file>${PROJECT_ROOT}\Effects Library\functions\isPermOscillating.m</file>
       <file>${PROJECT_ROOT}\Effects Library\functions\isRunge.m</file>
-      <file>${PROJECT_ROOT}\others\logo\logo3.png</file>
+      <file>${PROJECT_ROOT}\help_functions\cleanSignal.m</file>
+      <file>${PROJECT_ROOT}\images\logo\logo3.png</file>
       <file>${PROJECT_ROOT}\segmentations\dySegmentation.m</file>
       <file>${PROJECT_ROOT}\segmentations\matlabSegmentation.m</file>
       <file>${PROJECT_ROOT}\segmentations\swSegmentation.m</file>
@@ -54,7 +55,7 @@
     <fileset.resources />
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\s.maatoug\Documents\SFERA" name="mathworks" optional="false">C:\Users\s.maatoug\Documents\SFERA\mathworks</file>
+      <file location="C:\Users\s.maatoug\Documents\SFERA" name="sfera_tool" optional="false">C:\Users\s.maatoug\Documents\SFERA\sfera_tool</file>
     </build-deliverables>
     <workflow />
     <matlab>
