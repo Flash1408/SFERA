@@ -2,11 +2,25 @@ clc
 clearvars
 
 % This is a file used for testing and debugging.
-y = load('signals.mat');
-diff = y.yWin{1,6};
-diff_clean = cleanSignal(diff);
+y = load('damping.mat');
+t = load('time.mat');
+diff = y.yDiff{1,6};
+tdiff = t.t{1,6};
 
-t = 1: length(diff_clean);
+changePts = dySegmentation(diff, tdiff);
 
-%plot(t,diff_clean);
-isDiv = exp2(diff_clean);
+segments = cell(length(changePts) - 1, 1);
+times = cell(length(changePts) - 1, 1);
+for k = 1:length(segments)
+    segments{k} = diff(changePts(k):changePts(k + 1) - 1);
+    [segments{k}, idx] = cleanSignal(segments{k});
+    times{k} = tdiff(changePts(k):changePts(k + 1) - 1);
+    times{k} = times{k}(idx:end);
+end
+
+seg3 = segments{3,1};
+t3 = times{3,1};
+
+opt = dampOscillationOptions();
+opt.t = t3;
+isDiv = isDampOscillating(seg3, opt);

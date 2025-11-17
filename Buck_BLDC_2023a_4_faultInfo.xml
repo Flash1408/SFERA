@@ -48,7 +48,7 @@
          </symbols>
       </conditionals>
       <faultContainers type="faultinfo.FaultContainer" uuid="7039b08f-f591-459f-b69e-acd5859593aa">
-         <activeFault type="faultinfo.SLFault" uuid="2834a609-0ca6-47ed-b23c-6dff2e6a0158"/>
+         <activeFault type="faultinfo.SLFault" uuid="2de50060-6181-4ce4-844b-ebcb6092df21"/>
          <faultedEntityID>Outport|Buck_BLDC_2023a_4:9044|1</faultedEntityID>
          <faultedEntityName>Buck_BLDC_2023a_4/Sensor/Outport/1</faultedEntityName>
          <faults type="faultinfo.SLFault" uuid="2834a609-0ca6-47ed-b23c-6dff2e6a0158">
@@ -96,10 +96,10 @@
                <isPersistent>false</isPersistent>
             </triggerOn>
          </faults>
-         <isEnabled>false</isEnabled>
+         <isEnabled>true</isEnabled>
       </faultContainers>
       <faultContainers type="faultinfo.FaultContainer" uuid="92e1f3ea-d1c7-4226-b954-8be9982c06f0">
-         <activeFault type="faultinfo.SLFault" uuid="7b3081d3-6d0c-4616-a3e2-2b372b109b84"/>
+         <activeFault type="faultinfo.SLFault" uuid="e41ae3eb-c09d-4725-a93f-6722cad54bf9"/>
          <faultedEntityID>Outport|Buck_BLDC_2023a_4:9044|2</faultedEntityID>
          <faultedEntityName>Buck_BLDC_2023a_4/Sensor/Outport/2</faultedEntityName>
          <faults type="faultinfo.SLFault" uuid="61406983-ede3-4879-9f21-d92090711c50">
@@ -201,7 +201,7 @@
          <isEnabled>true</isEnabled>
       </faultContainers>
       <isEnabled>true</isEnabled>
-      <lastUpdatedAt>2025-11-09T15:40:10</lastUpdatedAt>
+      <lastUpdatedAt>2025-11-13T14:53:26</lastUpdatedAt>
       <modelName>Buck_BLDC_2023a_4</modelName>
       <modelUUID>3f5c806a-d5f7-4781-93c7-e73e1c8f64f6</modelUUID>
   </faultinfo.FaultContainerSet>
