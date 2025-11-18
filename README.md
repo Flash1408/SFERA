@@ -20,7 +20,7 @@ This repository contains the core code, auxiliary functions, and the user manual
 │   ├── Effects Library/                    # Functions and Simulink library for effect control
 │       ├── functions/                      # Core analysis logic
 │           ├── isDivergent.m               # Main analysis logic file
-│           ├── isGenericDiv.m              # Custom analysis prototype (in testing phase)
+│           ├── isCustomDivergent.m         # Custom analysis prototype (in testing phase)
 |           ├── ...                         # Base effects checking functions
 |           ├── options/                    # MATLAB class hierarchy: abstract 'options' and subclasses for each checking function
 |           └── aux_functions/              # Auxiliary functions used during analysis (e.g., cleanSignal)
@@ -39,7 +39,7 @@ This is the main folder containing all MATLAB code and resources required to run
 - **`Effects_Library/`** – Contains both the functions for effect control and the Simulink block library implementing them.  
 - **`functions/`** – Houses the logic for the base analysis.  
   - `isDivergent.m` summarizes the logic behind the core analysis.  
-  - `isGenericDiv.m` enables custom analysis functions, but it is currently under testing and **not yet accessible** through the tool interface.
+  - `isCustomDivergent.m` enables custom analysis functions, but it is currently under testing and **not yet accessible** through the tool interface.
 
 ---
 
@@ -61,7 +61,7 @@ Please refer to it before running the app for the first time.
 
 ## 🚧 Notes
 
-- The **custom function interface** (`isGenericDiv`) is still under development and **not yet available** in the current release.  
+- The **custom function interface** (`isCustomDivergent`) is still under development and **not yet available** in the current release.  
 - The current version supports **base effect analysis** only.  
 - Future releases will extend functionality to include user-defined functions and expanded effect libraries.
 
