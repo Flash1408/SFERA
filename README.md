@@ -22,8 +22,9 @@ This repository contains the core code, auxiliary functions, and the user manual
 │           ├── isDivergent.m               # Main analysis logic file
 │           ├── isGenericDiv.m              # Custom analysis prototype (in testing phase)
 |           ├── ...                         # Base effects checking functions
-|           └── aux_functions               # Auxiliary functions used during analysis (e.g., cleanSignal)
-├── developer_corner/                       # Main MATLAB code directory
+|           ├── options/                    # MATLAB class hierarchy: abstract 'options' and subclasses for each checking function
+|           └── aux_functions/              # Auxiliary functions used during analysis (e.g., cleanSignal)
+├── developer_corner/                       # Useful documents for developers to  modify code
 ```
 ## 🔍 Key Components 
 
