@@ -1,40 +1,52 @@
-function changePts = uniformSegmentation(y, t, perc)
-    % Uniform segmentation: split the signal into equal-length segments
-    %
-    % INPUTS:
-    %   y    : input signal (vector)
-    %   t    : time signal (vector) 
-    %   perc : percentage of the signal for each segment (0–100)
-    %
-    % OUTPUT:
-    %   changePts : indices of detected change points
+function changePts = uniformSegmentation(y, opt)
+%UNIFORMSEGMENTATION Segments the signal into uniform-length intervals.
+%
+%   changePts = uniformSegmentation(y, perc)
+%
+%   This function splits a signal into segments of equal length, defined
+%   as a percentage of the total signal length. It is a simple segmentation
+%   strategy that does not rely on signal features or derivatives.
+%
+%   INPUTS
+%       y    : Input signal (vector).
+%       opt : UniformSegmentationOptions object (optional)
+%             - perc : percentage of signal for each segment (0-100), default 10
+%
+%   OUTPUT
+%       changePts : Indices of segment boundaries, including the last sample.
+%
+%   METHOD OVERVIEW
+%   (1) Compute total length of the signal:
+%           N = max(y)
+%
+%   (2) Compute step size:
+%           step = round(N * perc / 100)
+%
+%   (3) Generate segment boundaries:
+%           changePts = startIndex:step:N
+%       Ensures that the last index of the signal is always included.
+%
+%   NOTES
+%       - This method does not consider signal content or dynamics; it
+%         is purely uniform.
+%       - Useful as a baseline segmentation or when equal-length windows
+%         are required for further analysis.
+%       - perc should be chosen according to the desired granularity.
 
-    if nargin < 3
-        perc = 10;  % default = 10% of signal
+    if nargin < 2 || isempty(opt)
+        opt = uniformSegmentationOptions();
     end
 
-    N = max(t);                % total signal length
-    step = round(N * perc / 100); % samples per segment
+    % Compute number of samples per segment
+    N = length(y);
+    step = round(N * opt.perc / 100);
+    
+    changePts = 1:step:N;
 
-    % Indices where a segment ends
-    t_init = min(t);
-    if t_init == 0
-        t_init = 1;
-    end
-    changePts = t_init:step:N;
     if changePts(end) ~= N
-        changePts = [changePts N]; % ensure last point is included
+        changePts = [changePts N]; % ensure last sample is included
     end
 
-    % Plot
-    %t = 1:N;
-    % figure
-    % plot(t, y, 'DisplayName', 'Signal');
-    % hold on
-    % xline(changePts, 'r--', 'LineWidth', 1.5, ...
-    %       'HandleVisibility','off');
-    % title(['Uniform segmentation (' num2str(perc) '%)'])
-    % legend show
 end
 
 

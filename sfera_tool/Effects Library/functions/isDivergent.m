@@ -1,17 +1,86 @@
 function [isDiv, howDiv] = isDivergent(y, effectName, customFunc, params0)
-%ISDIVERGENT Detects divergent or oscillatory behavior in a signal
+%ISDIVERGENT Detects divergent or oscillatory behavior in a signal.
 %
-%   [isDiv, howDiv] = isDivergent(y, effectName, customFunc, params0)
+%   [isDiv, howDiv] = isDivergent(y)
+%       Performs a full scan across all available divergence/oscillation
+%       models. Returns the first detected effect.
 %
-%   PARAMETERS:
-%       y          - Signal vector
-%       effectName - Optional, string specifying which model to test
-%       customFunc - Optional, custom function handle or string: f(params, t)
-%       params0    - Optional, initial parameters for customFunc
+%   [isDiv, howDiv] = isDivergent(y, effectName)
+%       Tests the signal only against the specified effect. The effectName
+%       must match one of the supported models (see list below).
 %
-%   RETURNS:
-%       isDiv      - True if divergence detected
-%       howDiv     - String describing detected effect
+%   [isDiv, howDiv] = isDivergent(y, [], customFunc, params0)
+%       Uses a user-defined custom model instead of predefined effects.
+%       The custom function must follow the signature:
+%           f(params, t)
+%       where:
+%           - params  : vector of parameters
+%           - t      : the independent variable of the model (e.g., time).
+%
+%   INPUTS
+%       y          - Numeric vector representing the signal under analysis.
+%
+%       effectName - (Optional) String specifying which model to test.
+%                    Supported values include:
+%                       'Exponential Divergence'
+%                       'Damped Oscillations'
+%                       'Permanent Oscillations'
+%                       'Divergent Oscillations'
+%                       'Sum of Sinusoids'
+%                       'Runge Trend'
+%                       'Arctangent Trend'
+%                       'Cubic Radix Trend'
+%                       'Fifth Radix Trend'
+%
+%       customFunc - (Optional) Custom function handle or string.
+%                    If provided, this overrides effectName.
+%                    Must be callable as:
+%                        output = customFunc(params, t)
+%
+%       params0    - (Optional) Initial parameter vector for customFunc.
+%                    Required only when customFunc is used.
+%
+%   OUTPUTS
+%       isDiv      - Logical true/false indicating whether divergence or
+%                    oscillatory behavior was detected.
+%
+%       howDiv     - String describing the detected effect. If no effect
+%                    matches the signal, returns:
+%                       'No divergence detected'
+%
+%   BEHAVIOR
+%       The function operates in three modes:
+%
+%       (1) Custom Mode:
+%           If customFunc is provided, the function evaluates divergence
+%           using the user-defined model and params0.
+%
+%       (2) Specific-Effect Mode:
+%           If effectName is provided, only the corresponding model is tested.
+%
+%       (3) Full-Scan Mode (default):
+%           All predefined models are tested in a fixed priority order.
+%           The first positive detection is returned.
+%
+%   NOTES
+%       - Each predefined effect corresponds to a dedicated options class
+%         (e.g., expDivergenceOptions) and a matching detector function
+%         (e.g., isExpDivergent).
+%
+%       - The function expects y to be a column or row vector. No missing
+%         values should be present.
+%
+%   EXAMPLES
+%       % Full scan
+%       [flag, type] = isDivergent(signal);
+%
+%       % Test only exponential divergence
+%       [flag, type] = isDivergent(signal, 'Exponential Divergence');
+%
+%       % Custom model
+%       myModel = @(p,t) p(1) * exp(p(2)*t);
+%       [flag, type] = isDivergent(signal, [], myModel, [1, 0.1]);
+
 
     % --- CASE 1: Custom function ---
     if nargin >= 3 && ~isempty(customFunc)
@@ -98,7 +167,7 @@ function [isDiv, howDiv] = isDivergent(y, effectName, customFunc, params0)
     end
 end
 
-%% Helper: simple inline ternary operator
+% ---> Helper: inline ternary operator <---
 function out = ternary(cond, a, b)
     if cond
         out = a;
