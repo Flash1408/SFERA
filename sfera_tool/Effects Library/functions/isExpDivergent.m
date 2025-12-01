@@ -1,6 +1,7 @@
 function isExp = isExpDivergent(y, opt)
     % ISEXP DIVERGENT checks if the signal y fits an exponential trend
     % Model: y(t) = A + B * exp(C * t)
+    %
     % Returns true if the exponential fit has R^2 > threshold
 
     arguments
@@ -24,7 +25,7 @@ function isExp = isExpDivergent(y, opt)
     model = @(p,t) p(1) + p(2)*exp(p(3)*t); 
 
     % --- Initial guesses ---
-    A0 = min(y);  % baseline
+    A0 = min(y);  
     B0 = max(y) - min(y);
     C0 = opt.params0(3); % small negative decay   
     opt.params0 = [A0, B0, C0];
@@ -43,6 +44,12 @@ function isExp = isExpDivergent(y, opt)
         % --- Fit model ---
         params_fit = lsqcurvefit(model, opt.params0, t, y, lb, ub, options);
 
+        % --- Avoid fit of linear models ---
+        % if abs(params_fit(3)) < 1e-5
+        %     isExp = false;
+        %     return
+        % end
+
         % --- Compute fitted curve ---
         y_fit = model(params_fit, t);
 
@@ -56,12 +63,14 @@ function isExp = isExpDivergent(y, opt)
         isExp = R2 > opt.threshold;
 
         % --- Optional plot ---
-        if isExp && opt.showPlot            
-            figure;
-            plot(y,'b','LineWidth',1.5); hold on;
-            plot(y_fit,'r--','LineWidth',1.5);
+        if  opt.showPlot            
+            figure
+            plot(t, y,'b','LineWidth',1.5); hold on;
+            plot(t, y_fit,'r--','LineWidth',1.5);
             legend('Real segment','Curve fit');
             title(['Exponential fit, R^2 = ' num2str(R2,'%.2f')]);
+            xlabel('Time (s)');
+            ylabel('Speed (rpm)');
             hold off;
          end
 

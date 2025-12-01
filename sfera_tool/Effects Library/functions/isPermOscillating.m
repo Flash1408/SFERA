@@ -23,49 +23,58 @@ function isPerm = isPermOscillating(y, opt)
     end
 
     % --- Peak check (quick reject) ---
-    [validPeaks] = findMaxPeaks(y, 0.2 * max(y), 100);
-    if numel(validPeaks) < 2
+    localRange = max(y) - min(y);
+    validPeaks = findMaxPeaks(y, 0.1 * localRange, 100);
+    if numel(validPeaks) < 3
         isPerm = false;
         return
     end
 
-    % --- Time base normalization ---
-    t = linspace(0,1,length(y))';      
+    % --- Time vector ---
+    t = (1:length(y))';     
 
     % --- Initial parameters ---
     A0 = (max(y) - min(y))/2;
     offset0 = mean(y);
     omega0 = 2*pi;                    
     phi0 = 0;
-
-    % model: y(t) = A * cos(ωt + φ) + offset + small damping
-    model = @(p,t) p(1) * exp(p(2)*t) .* cos(p(3)*t + p(4)) + p(5);
-
     p0 = [A0, 0, omega0, phi0, offset0];
+
+    % --- Bounds ---
     lb = [-Inf -opt.betaTol 0 -2*pi min(y)];
     ub = [ Inf  opt.betaTol Inf  2*pi max(y)];
 
-    % --- Optimization ---
-    R2 = 0;
-    beta_fit = NaN;
+    % --- Model definition ---
+    model = @(p,t) p(1) * exp(p(2)*t) .* cos(p(3)*t + p(4)) + p(5);
+
+    % --- Fit options ---
+    options = optimoptions('lsqcurvefit',...
+    'Display','off',...
+    'MaxIterations', opt.maxIter,...
+    'TolFun', opt.tolFun);
 
     try
-        options = optimoptions('lsqcurvefit',...
-            'Display','off',...
-            'MaxIterations', opt.maxIter,...
-            'TolFun', opt.tolFun);
+        % --- Fit model ---
+        params_fit = lsqcurvefit(model, p0, t, y, lb, ub, options);
+        beta_fit = params_fit(2);
 
-        pfit = lsqcurvefit(model, p0, t, y, lb, ub, options);
+         % --- Check amplitude ---
+        A_fit = abs(params_fit(1));
+        if A_fit < 0.05 * (max(y)-min(y))
+            isPerm = false;
+            return;
+        end
 
-        beta_fit = pfit(2);
-        y_fit    = model(pfit, t);
+        % --- Compute fitted values ---
+        y_fit    = model(params_fit, t);
 
-        % R^2
-        SSR = sum((y - y_fit).^2);
+        % --- Compute R-squared ---
+        residuals = y - y_fit;
+        SSR = sum(residuals.^2);
         SST = sum((y - mean(y)).^2);
         R2 = 1 - SSR/SST;
 
-        % FIT CRITERION
+        % --- Fit criterion ---
         opt.betaTol = 1e-5;
         useFit = (R2 > opt.threshold) && (abs(beta_fit) < opt.betaTol);
 

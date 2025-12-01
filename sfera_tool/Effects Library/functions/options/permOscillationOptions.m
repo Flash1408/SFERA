@@ -18,7 +18,7 @@ classdef permOscillationOptions < options
 
         % --- Spectral check ---
         useSpectralCheck logical = true;
-        spectralThreshold double = 0.25;  % picco dominante (0–1 normalizzato)
+        spectralThreshold double = 0.5;  % dominant peak (0–1)
 
     end
 

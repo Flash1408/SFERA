@@ -108,6 +108,7 @@ function [isDiv, howDiv] = isDivergent(y, effectName, customFunc, params0)
                 isDiv = isExpDivergent(y, opt);  
             case 'Damped Oscillations'
                 opt = dampOscillationOptions();
+                opt.threshold = 0.7;
                 isDiv = isDampOscillating(y, opt);
             case 'Permanent Oscillations'
                 opt = permOscillationOptions();

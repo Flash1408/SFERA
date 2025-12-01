@@ -1,6 +1,6 @@
 function isArcTan = isArcTanDivergent(y, opt)
     % ISARCTANDIVERGENT checks if a signal follows an arctangent divergence trend.
-    % Model: y(t) = A * atan((t - H) / B) + K
+    % Model: y(t) = A + B* atan((t - H) / C) 
     %
      % Returns true if the fit is good (R^2 > threshold)
 
@@ -11,9 +11,6 @@ function isArcTan = isArcTanDivergent(y, opt)
 
     % --- Preprocessing ---
     y = y(:);
-    % if iscell(y)
-    %     y = cell2mat(y);
-    % end
     y = y(~isnan(y) & ~isinf(y));
 
     if length(y) < 5
@@ -21,8 +18,16 @@ function isArcTan = isArcTanDivergent(y, opt)
         return;
     end
 
-    % --- Normalized time vector ---
+    % --- Time vector ---
     t = (0:length(y)-1)';
+
+    % --- Curvature check ---
+    localRange = max(y) - min(y);
+    curv = mean(abs(diff(diff(y))));
+    if curv < 0.001 * localRange
+        isArcTan = false;
+        return;
+    end
 
     % --- Model definition ---
     model = @(p, t) p(1) * atan((t - p(2)) / p(3)) + p(4);
@@ -36,6 +41,12 @@ function isArcTan = isArcTanDivergent(y, opt)
     try
         % --- Fit curve ---
         params_fit = lsqcurvefit(model, opt.params0, t, y, opt.lb, opt.ub, options);
+
+        A_fit = abs(params_fit(1));       
+        if A_fit < 0.2 * localRange
+            isArcTan = false;
+            return;
+        end
 
         % --- Predicted curve ---
         y_fit = model(params_fit, t);

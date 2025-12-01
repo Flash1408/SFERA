@@ -1,6 +1,6 @@
 function damping_oscillations = isDampOscillating(y, opt)
     % ISDAMPOSCILLATING checks if a signal exhibits damped oscillations
-    % Model: y(t) = A * exp(beta * t) * cos(omega * t + phi) + c
+    % Model: y(t) = A + B* exp(beta * t) * cos(omega * t + phi) 
     %
     % Returns true if the fit is good (R^2 > threshold) and beta < 0
 
@@ -19,10 +19,9 @@ function damping_oscillations = isDampOscillating(y, opt)
         return
     end
 
-    % --- Peak check (at least 2 significant peaks) --- 
-    [validPeaks] = findMaxPeaks(y, 0.2*max(y), 100);
-    
-
+    % --- Peak check (at least 3 significant peaks) --- 
+    localRange = max(y) - min(y);
+    validPeaks = findMaxPeaks(y, 0.1 * localRange, 100);
     if numel(validPeaks) < 3
         damping_oscillations = false;
         return;
@@ -31,12 +30,12 @@ function damping_oscillations = isDampOscillating(y, opt)
     % --- Time vector ---
     t = (1:length(y))';
 
-    % --- Initial guesses ---
+    % --- Initial parameters ---
     A0 = max(abs(y));    % amplitude
     beta0 = -0.01;       % negative damping
     omega0 = 0.01;       % frequency
     phi0 = 0;            % phase
-    C0 = mean(y);           % offset
+    C0 = mean(y);        % offset
     opt.params0 = [A0, beta0, omega0, phi0, C0];
 
     % --- Bounds ---
@@ -54,9 +53,14 @@ function damping_oscillations = isDampOscillating(y, opt)
     
     try
         % --- Fit model ---
-        %params_fit = lsqcurvefit(model, opt.params0, opt.t, y, lb, ub, options);
         params_fit = lsqcurvefit(model, opt.params0, t, y, lb, ub, options);
 
+        % --- Check amplitude ---
+        A_fit = abs(params_fit(1));
+        if A_fit < 0.05 * (max(y)-min(y))
+            damping_oscillations = false;
+            return;
+        end
 
         % --- Check beta (must be negative for damping) ---
         beta_fit = params_fit(2);
@@ -64,6 +68,14 @@ function damping_oscillations = isDampOscillating(y, opt)
             damping_oscillations = false;
             return
         end
+
+        % --- Check frequency ---
+        omega_fit = params_fit(3);
+        if omega_fit < 0.5
+            damping_oscillations = false;
+            return;
+        end
+
 
         % --- Compute fitted values ---
         y_fit = model(params_fit, t);
@@ -78,7 +90,7 @@ function damping_oscillations = isDampOscillating(y, opt)
         damping_oscillations = R2 > opt.threshold;
         
         % --- Optional plot ---
-        if damping_oscillations && opt.showPlot     
+        if  opt.showPlot     
             figure;
             plot(y,'b','LineWidth',1.5); hold on;
             plot(y_fit,'r--','LineWidth',1.5);

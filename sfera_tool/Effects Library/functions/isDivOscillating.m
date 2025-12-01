@@ -12,9 +12,6 @@ function divergent_oscillations = isDivOscillating(y, opt)
 
     % --- Preprocessing ---
     y = y(:);
-    % if iscell(y)
-    %     y = cell2mat(y);
-    % end
     y = y(~isnan(y) & ~isinf(y));
 
     % If signal too short, return false
@@ -23,8 +20,9 @@ function divergent_oscillations = isDivOscillating(y, opt)
         return;
     end
 
-    % --- Peaks check (at least 2 significant peaks) ---
-    [validPeaks] = findMaxPeaks(y, 0.2*max(y), 100);
+    % --- Peaks check (at least 3 significant peaks) ---
+    localRange = max(y) - min(y);
+    validPeaks = findMaxPeaks(y, 0.1 * localRange, 100);
     if numel(validPeaks) < 3
         divergent_oscillations = false;
         return;

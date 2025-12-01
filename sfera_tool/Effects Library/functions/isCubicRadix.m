@@ -1,6 +1,6 @@
 function isCubicRad = isCubicRadix(y, opt)
     % ISCUBICRADIX checks if a signal follows a cubic radix trend
-    % Model: y(t) = A * ((B * (t - H)).^(1/3)) + K
+    % Model: y(t) = A + B* ((C * (t - H)).^(1/3))
     %
     % Returns true if R^2 > threshold.
 

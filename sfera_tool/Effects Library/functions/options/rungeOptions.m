@@ -7,8 +7,8 @@ classdef rungeOptions < options
         params0 double = [1, 10, 0.5, 0]; 
 
         % --- Bounds ---
-        lb double = [0, 0, 0, -Inf];
-        ub double = [Inf, 1e3, 1, Inf];
+        lb = [0.01, 1, 0.05, -Inf];   % A, B, C, D
+        ub = [Inf, 1e3, 0.95, Inf];
 
         % --- Optimization settings ---
         tolFun double = 1e-6;

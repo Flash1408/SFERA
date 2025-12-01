@@ -2,8 +2,8 @@
 classdef dampOscillationOptions < options
     properties
         %  --- Parameters bound ---
-        lb double = [0, -10, 0, -pi, -Inf]; 
-        ub double = [Inf, 0, 50, pi, +Inf];
+        lb double = [0, -5, 0.05, -pi, -Inf]; 
+        ub double = [Inf, -1e-3, 50, pi, +Inf];
 
         % --- Initial guesses ---
         params0 double = [1, 1, 0.5, 0, 1];  

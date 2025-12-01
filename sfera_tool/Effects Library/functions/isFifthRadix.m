@@ -1,6 +1,6 @@
 function isFifthRad = isFifthRadix(y, opt)
     % ISFIFTHRADIX checks if a signal follows a 5th-root type trend
-    % Model: y(t) = A * ((B * (t - H))^(1/5)) + K
+    % Model: y(t) = A + B* ((C * (t - H))^(1/5)) 
     %
     % Returns true if R² > threshold.
 
