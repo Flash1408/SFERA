@@ -1,0 +1,116 @@
+classdef (Abstract) BaseEffect < handle
+    % BaseEffect
+    %
+    % Abstract class representing the core structure of an "Effect"
+    % within the Simulink Fault Analyzer effect analysis framework.
+    %
+    % This class implements the Template Method design pattern, defining
+    % the skeleton of the analysis algorithm while delegating the definition
+    % of specific processing steps (tasks) to concrete subclasses.
+    %
+    % It inherits from "handle" to ensure reference semantics:
+    % - modifications to context and properties are shared across methods
+    %
+    % Overall responsibilities:
+    % - orchestration of the analysis pipeline
+    % - management of execution context
+    % - configuration handling
+    % - task execution coordination
+
+    properties (Access = protected)
+        tasks (1,:) cell            % Cell array of Task objects
+        options (1,1) BaseOptions   % Configuration parameters
+        context (1,1) EffectContext % Shared execution context
+    end
+
+    methods
+
+        function obj = BaseEffect()
+            % Constructor of BaseEffect
+            %
+            % Initializes the internal pipeline structure.
+            %
+            % The task list is initialized as an empty cell array.
+            obj.tasks = {};
+
+            % The options property is initialized as an empty object.
+            obj.options = [];
+
+            % The context property is initialized as an empty object.
+            obj.context = [];
+        end
+
+        function result = analyze(obj, y)
+            % Main entry point of the pipeline.
+            %
+            % INPUT:
+            %   y -> input signal
+            %
+            % OUTPUT:
+            %   result -> true if all tasks succeed
+
+            % Create the shared execution context
+            % It contains input data and options
+            obj.context = EffectContext(y, obj.options);
+
+            % Configure the task pipeline (implemented by subclasses)
+            obj.configureTasks();
+
+            % Execute all tasks
+            result = obj.executeTasks(y);
+        end
+
+        function result = executeTasks(obj)
+            % Executes all tasks sequentially.
+            %
+            % OUTPUT:
+            %   result -> false if any task fails
+            result = true;
+
+            % Iterate over all tasks
+            for i = 1:numel(obj.tasks)
+
+                % Get current task
+                currentTask = obj.tasks{i};
+
+                % Execute task using shared context
+                ok = currentTask.execute(obj.context);
+
+                % If task fails, stop execution immediately
+                if ~ok
+                    result = false;
+                    return;
+                end
+            end
+        end
+
+        function addTask(obj, task)
+            % Adds a new task to the pipeline.
+            %
+            % INPUT:
+            %   task -> task to be added
+            obj.tasks{end+1} = task;
+        end
+
+        function setOptions(obj, opt)
+            % Sets configuration parameters.
+            %
+            % INPUT:
+            %   opt -> effect configuration (BaseOptions or derived classes)
+            obj.options = opt;
+        end
+
+    end
+
+    methods (Abstract, Access = protected)
+        % Abstract method that must be implemented by subclasses
+        %
+        % Responsibility:
+        % - define the task sequence for a specific effect implementation
+        %
+        % Example:
+        %   ExpEffect -> preprocess + fitting + R² computation + post-check + plot
+        %   DampEffect -> different pipeline configuration
+        configureTasks(obj)
+    end
+end
