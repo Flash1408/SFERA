@@ -9,7 +9,7 @@ classdef (Abstract) BaseEffect < handle
     % of specific processing steps (tasks) to concrete subclasses.
     %
     % It inherits from "handle" to ensure reference semantics:
-    % - modifications to context and properties are shared across methods
+    % - modifications to context and properties are shared across methods.
     %
     % Overall responsibilities:
     % - orchestration of the analysis pipeline
@@ -29,88 +29,106 @@ classdef (Abstract) BaseEffect < handle
             % Constructor of BaseEffect
             %
             % Initializes the internal pipeline structure.
-            %
-            % The task list is initialized as an empty cell array.
+
+            % Initialize an empty task list.
             obj.tasks = {};
 
-            % The options property is initialized as an empty object.
+            % Initialize empty references.
             obj.options = [];
-
-            % The context property is initialized as an empty object.
             obj.context = [];
         end
 
-        function result = analyze(obj, y)
-            % Main entry point of the pipeline.
+        function result = analyze(obj, y, t)
+            % Main entry point of the analysis pipeline.
             %
             % INPUT:
             %   y -> input signal
+            %   t -> time vector
             %
             % OUTPUT:
-            %   result -> true if all tasks succeed
+            %   result -> true if all tasks complete successfully
 
-            % Create the shared execution context
-            % It contains input data and options
-            obj.context = EffectContext(y, obj.options);
+            % Ensure that configuration options have been set.
+            if isempty(obj.options)
+                error('BaseEffect:MissingOptions', ...
+                    'Options must be set before calling analyze().');
+            end
 
-            % Configure the task pipeline (implemented by subclasses)
+            % Reset the task list before configuring a new pipeline.
+            obj.tasks = {};
+
+            % Create the shared execution context.
+            obj.context = EffectContext(y, t, obj.options);
+
+            % Configure the task pipeline (implemented by subclasses).
             obj.configureTasks();
 
-            % Execute all tasks
-            result = obj.executeTasks(y);
-        end
-
-        function result = executeTasks(obj)
-            % Executes all tasks sequentially.
-            %
-            % OUTPUT:
-            %   result -> false if any task fails
-            result = true;
-
-            % Iterate over all tasks
-            for i = 1:numel(obj.tasks)
-
-                % Get current task
-                currentTask = obj.tasks{i};
-
-                % Execute task using shared context
-                ok = currentTask.execute(obj.context);
-
-                % If task fails, stop execution immediately
-                if ~ok
-                    result = false;
-                    return;
-                end
-            end
+            % Execute all configured tasks.
+            result = obj.executeTasks();
         end
 
         function addTask(obj, task)
-            % Adds a new task to the pipeline.
+            % Adds a new task to the execution pipeline.
             %
             % INPUT:
-            %   task -> task to be added
+            %   task -> Task object to be added.
             obj.tasks{end+1} = task;
         end
 
         function setOptions(obj, opt)
-            % Sets configuration parameters.
+            % Sets the configuration parameters.
             %
             % INPUT:
-            %   opt -> effect configuration (BaseOptions or derived classes)
+            %   opt -> BaseOptions object (or derived class).
             obj.options = opt;
         end
 
     end
 
+    methods (Access = protected)
+
+        function result = executeTasks(obj)
+            % Executes all configured tasks sequentially.
+            %
+            % OUTPUT:
+            %   result -> true if every task succeeds,
+            %             false otherwise.
+
+            result = true;
+
+            % Execute each task in the configured pipeline.
+            for i = 1:numel(obj.tasks)
+
+                currentTask = obj.tasks{i};
+
+                ok = currentTask.execute(obj.context);
+
+                % Stop immediately if one task fails.
+                if ~ok
+                    result = false;
+                    return;
+                end
+
+            end
+
+        end
+
+    end
+
     methods (Abstract, Access = protected)
-        % Abstract method that must be implemented by subclasses
+        % Configure the task pipeline.
         %
-        % Responsibility:
-        % - define the task sequence for a specific effect implementation
+        % Concrete Effect subclasses must implement this method to
+        % define the sequence of tasks composing the analysis.
         %
         % Example:
-        %   ExpEffect -> preprocess + fitting + R² computation + post-check + plot
-        %   DampEffect -> different pipeline configuration
-        configureTasks(obj)
+        %   ExpEffect:
+        %       PreprocessTask
+        %       FitTask
+        %       ComputeR2Task
+        %       ThresholdTask
+        %       PlotTask
+        configureTasks(obj);
     end
+
 end
