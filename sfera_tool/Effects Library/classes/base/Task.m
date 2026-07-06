@@ -3,49 +3,39 @@ classdef (Abstract) Task < handle
     %
     % Abstract base class for all execution steps in an effect pipeline.
     %
-    % This class defines the interface that all concrete tasks must implement.
-    % Each task represents a single operation in the workflow (e.g., preprocessing,
-    % model fitting, validation, plotting).
+    % This class defines the interface that all concrete tasks must
+    % implement. Each task represents a single operation in the analysis
+    % workflow (e.g., preprocessing, model fitting, validation, plotting).
     %
-    % Being a handle class means that Task objects are passed by reference,
-    % not by value. This allows consistent interaction with shared data
-    % (EffectContext) without unnecessary copying.
+    % Task inherits from handle so that all task objects exhibit reference
+    % semantics and operate consistently on the shared EffectContext.
 
-    properties
-        name (1,1) string   % Task identifier
+    properties (Access = protected)
+        % Identifier of the task.
+        name (1,1) string = ""
     end
 
     methods
         function obj = Task(name)
-            % Constructor of Task
-            % 
-            % INPUT:
-            %   name -> identifier of the task
+            % Constructor of Task.
             %
-            % Initialize the task name if provided
-            if nargin > 0
-                obj.name = name;
+            % INPUT:
+            %   name -> task identifier.
+            if nargin > 0 
+                obj.name = name; 
             end
         end
     end
 
     methods (Abstract)
-        % Perform the task operation.
-        %
-        % This method must be implemented by all subclasses of Task.
-        % It contains the core logic of the task.
+        % Execute the task.
         %
         % INPUT:
-        %   context -> EffectContext object containing:
-        %       - input data (y, t)
-        %       - model and parameters
-        %       - intermediate and final results
+        %   context -> EffectContext shared among all tasks.
         %
         % OUTPUT:
-        %   ok -> logical value:
-        %       true  -> task completed successfully
-        %       false -> task failed, pipeline execution should stop
-        %
-        ok = execute(obj, context) 
+        %   ok -> true if the task completes successfully, false otherwise.
+        ok = execute(obj, context)
     end
+
 end

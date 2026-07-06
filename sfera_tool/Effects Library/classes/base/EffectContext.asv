@@ -46,13 +46,7 @@ classdef EffectContext < handle
             %   t -> time vector
             %   options -> configuration parameters
             %
-            
-            % Validate input dimensions.
-            if numel(y) ~= numel(t)
-                error("EffectContext:InvalidInput", ...
-                    "The signal and time vector must contain the same number of samples.");
-            end
-            
+
             % Store input signal
             obj.y = y;
 

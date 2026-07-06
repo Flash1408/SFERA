@@ -1,7 +1,7 @@
 classdef BaseOptions < handle
     % BaseOptions
     % 
-    % Abstract container for configuration parameters used by effects and tasks.
+    % Container for configuration parameters used by effects and tasks.
     %
     % This class encapsulates generic options.
     %

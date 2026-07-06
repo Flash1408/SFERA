@@ -17,22 +17,19 @@ classdef PreprocessTask < Task
     %
 
     properties
-        % Name identifying the task.
-        name string
-
         % Minimum number of valid samples required
-        minSamples double
+        minSamples (1,1) double
     end
 
     methods
 
         function obj = PreprocessTask()
-            % Construct of PreprocessTask
+            % Constructor of PreprocessTask
             %
             % Call superclass constructor to initialize the object first
             obj = obj@Task("PreprocessTask");
 
-            % Initializes the minimum number of samples required
+            % Initialize the minimum number of samples required
             obj.minSamples = 5;
         end
 
@@ -42,7 +39,7 @@ classdef PreprocessTask < Task
             % INPUT:
             %   context -> Shared analysis context.
             %
-            % Outputs:
+            % OUTPUT:
             %   ok -> True if preprocessing succeeds, false otherwise
             %
             % The method:
@@ -66,6 +63,8 @@ classdef PreprocessTask < Task
             end
 
             % 3. Remove invalid samples (NaN / Inf)
+            % Keep only samples for which both the signal and the
+            % corresponding time instant are finite.
             validMask = ...
                 isfinite(context.y) & ...
                 isfinite(context.t);
