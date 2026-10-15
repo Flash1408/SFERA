@@ -134,8 +134,8 @@ classdef (Abstract) BaseEffect < handle
 
             end
 
-            % Store the final pipeline result in the shared context.
-            obj.context.result = result;
+            % Retrieve the final analysis result from the shared context.
+            result = obj.context.result;
         end
 
     end

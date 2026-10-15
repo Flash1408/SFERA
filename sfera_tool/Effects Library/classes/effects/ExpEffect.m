@@ -44,16 +44,21 @@ classdef ExpEffect < BaseEffect
     
     methods (Access = protected)
 
+       
         function configureTasks(obj)
             % Configures the task pipeline for exponential analysis.
             %
             % Data preprocessing must be completed before fitting
-            % the exponential model.
+            % the exponential model. The fitted model is then evaluated
+            % and checked against the acceptance threshold.
 
             obj.addTask(PreprocessTask());
             obj.addTask(FitModelTask(obj));
+            obj.addTask(R2ComputationTask());
+            obj.addTask(PostCheckTask());
         end
-        
+
+
     end
 
 end
