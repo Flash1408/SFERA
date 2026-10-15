@@ -18,9 +18,9 @@ classdef (Abstract) BaseEffect < handle
     % - task execution coordination
 
     properties (Access = protected)
-        tasks (1,:) cell            % Cell array of Task objects
-        options (1,1) BaseOptions   % Configuration parameters
-        context (1,1) EffectContext % Shared execution context
+        tasks (1,:) cell    % Cell array of Task objects
+        options             % Configuration parameters; empty until set
+        context             % Shared execution context; empty until created
     end
 
     methods
@@ -71,7 +71,14 @@ classdef (Abstract) BaseEffect < handle
             % Adds a new task to the execution pipeline.
             %
             % INPUT:
-            %   task -> Task object to be added.
+            %   task -> Scalar Task object to be added.
+
+            % Validate the task object.
+            if ~isa(task, 'Task') || ~isscalar(task)
+                error('BaseEffect:InvalidTask', ...
+                    'The task must be a scalar Task object.');
+            end
+
             obj.tasks{end+1} = task;
         end
 
@@ -80,6 +87,13 @@ classdef (Abstract) BaseEffect < handle
             %
             % INPUT:
             %   opt -> BaseOptions object (or derived class).
+
+            % Validate the options object.
+            if ~isa(opt, 'BaseOptions') || ~isscalar(opt)
+                error('BaseEffect:InvalidOptions', ...
+                    'Options must be a scalar BaseOptions object.');
+            end
+
             obj.options = opt;
         end
 
@@ -93,6 +107,8 @@ classdef (Abstract) BaseEffect < handle
             % OUTPUT:
             %   result -> true if every task succeeds,
             %             false otherwise.
+            %
+            % The final result is also stored in context.result.
 
             result = true;
 
@@ -103,14 +119,23 @@ classdef (Abstract) BaseEffect < handle
 
                 ok = currentTask.execute(obj.context);
 
+                % Ensure that each task returns a logical scalar.
+                if ~islogical(ok) || ~isscalar(ok)
+                    error('BaseEffect:InvalidTaskResult', ...
+                        'Each task must return a logical scalar.');
+                end
+
                 % Stop immediately if one task fails.
                 if ~ok
                     result = false;
+                    obj.context.result = false;
                     return;
                 end
 
             end
 
+            % Store the final pipeline result in the shared context.
+            obj.context.result = result;
         end
 
     end
