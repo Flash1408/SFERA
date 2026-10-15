@@ -1,24 +1,41 @@
-%Questa classe corrisponde alla funzione "isExpDivergent"
+% This class corresponds to the legacy function "isExpDivergent".
+%
+% It defines the exponential model and computes its initial parameters.
+% The analysis pipeline is configured through configureTasks.
 
-% CLASSE DA SISTEMARE CON IL NUOVO APPROCCIO: AGGIUNGERE NUOVI TASK
-% PER GESTIRE IL RECUPERO DEL MODELLO E DEI PARAMETRI
 classdef ExpEffect < BaseEffect
 
     methods
 
         function model = getModel(~)
+            % Returns the exponential model:
+            % y(t) = A + B * exp(C * t)
+
             model = @(p,t) p(1) + p(2)*exp(p(3)*t);
         end
 
         function params0 = getInitialParams(~, y, opt)
+            % Computes the initial parameters from the input signal.
+            %
+            % A0 and B0 are estimated from the data, while C0 is
+            % retrieved from the effect-specific options.
+
+            if ~isa(opt, 'ExpOptions') || ~isscalar(opt)
+                error('ExpEffect:InvalidOptions', ...
+                    'Options must be a scalar ExpOptions object.');
+            end
+
+            y = y(:);
+            y = y(isfinite(y));
+
+            if isempty(y)
+                error('ExpEffect:InvalidSignal', ...
+                    'The signal must contain at least one finite sample.');
+            end
+
             A0 = min(y);
             B0 = max(y) - min(y);
-
-            if isfield(opt, 'params0') && numel(opt.params0) >= 3
-                C0 = opt.params0(3);
-            else
-                C0 = 0.01; % valore di default sicuro
-            end
+            C0 = opt.params0(3);
 
             params0 = [A0, B0, C0];
         end
