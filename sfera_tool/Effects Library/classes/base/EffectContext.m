@@ -1,6 +1,6 @@
 classdef EffectContext < handle
-    % EffectContext 
-    % 
+    % EffectContext
+    %
     % Shared data container for the effect execution pipeline.
     %
     % This class stores all data required during the execution of an effect.
@@ -9,59 +9,57 @@ classdef EffectContext < handle
     %   - write intermediate results
     %   - update final outputs
     %
-    % Being a handle class ensures that all tasks operate on the same
-    % instance (shared state).
+    % All tasks operate on the same context instance.
 
     properties
-        % Input data
-        y (1,:) double          % Signal values
-        t (1,:) double          % Time vector
+        % Input data (column vectors)
+        y (:,1) double
+        t (:,1) double
 
-        % Model definition
-        model function_handle   % Model function to be fitted
+        % Model definition (assigned when needed)
+        model
 
-        % Parameters
-        params0 (1,:) double    % Initial parameter guess
-        params_fit (1,:) double % Estimated parameters after fitting
+        % Parameters and intermediate results
+        params0 double
+        params_fit double
+        y_fit double
 
-        % Outputs
-        y_fit (1,:) double      % Model output using fitted parameters
-        R2 (1,1) double         % Goodness-of-fit metric
+        % Goodness-of-fit metric
+        R2 (1,1) double
 
         % Execution result
-        result (1,1) logical    % Final success/failure flag
+        result (1,1) logical
 
         % Configuration
-        options (1,1) BaseOptions % Execution options
+        options (1,1) BaseOptions
     end
 
     methods
         function obj = EffectContext(y, t, options)
-            % Constructor of EffectContext
-            %
-            % Initializes the context with input data and options.
-            %
-            % INPUT:
-            %   y -> signal values
-            %   t -> time vector
-            %   options -> configuration parameters
-            %
-            
-            % Validate input dimensions.
+            % Validate input data
+            if ~isa(y, 'double') || ~isvector(y) || ...
+                    ~isa(t, 'double') || ~isvector(t)
+                error("EffectContext:InvalidInput", ...
+                    "The signal and time must be double vectors.");
+            end
+
             if numel(y) ~= numel(t)
                 error("EffectContext:InvalidInput", ...
                     "The signal and time vector must contain the same number of samples.");
             end
-            
-            % Store input signal
-            obj.y = y;
 
-            % Store time vector
-            obj.t = t;
+            if ~isa(options, 'BaseOptions') || ~isscalar(options)
+                error("EffectContext:InvalidOptions", ...
+                    "Options must be a scalar BaseOptions object.");
+            end
 
-            % Store configuration options
+            % Standardize input data as column vectors
+            obj.y = y(:);
+            obj.t = t(:);
+
+            % Store configuration
             obj.options = options;
-            
+
             % Initialize optional fields
             obj.model = [];
             obj.params0 = [];

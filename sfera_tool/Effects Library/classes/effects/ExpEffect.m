@@ -1,4 +1,7 @@
 %Questa classe corrisponde alla funzione "isExpDivergent"
+
+% CLASSE DA SISTEMARE CON IL NUOVO APPROCCIO: AGGIUNGERE NUOVI TASK
+% PER GESTIRE IL RECUPERO DEL MODELLO E DEI PARAMETRI
 classdef ExpEffect < BaseEffect
 
     methods
