@@ -1,12 +1,11 @@
-% This class is responsible for plotting the results of the
-% exponential analysis when visualization is enabled.
-%
-% It displays the original signal and the fitted exponential curve,
-% including the computed R-squared value in the plot title.
-% Plotting is optional and must not affect the numerical result.
-
 classdef PlotTask < Task
-
+    % This class is responsible for plotting the results of the
+    % exponential analysis when visualization is enabled.
+    %
+    % It displays the original signal and the fitted exponential curve,
+    % including the computed R-squared value in the plot title.
+    % Plotting is optional and must not affect the numerical result.
+    
     methods
 
         function obj = PlotTask()
