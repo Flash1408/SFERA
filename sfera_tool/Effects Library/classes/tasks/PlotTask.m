@@ -1,11 +1,11 @@
 classdef PlotTask < Task
-    % This class is responsible for plotting the results of the
-    % exponential analysis when visualization is enabled.
+    % PlotTask is responsible for visualizing the results of signal
+    % analysis when plotting is enabled.
     %
-    % It displays the original signal and the fitted exponential curve,
-    % including the computed R-squared value in the plot title.
+    % It displays the original signal and the fitted model, including
+    % the computed R-squared value in the plot title.
     % Plotting is optional and must not affect the numerical result.
-    
+
     methods
 
         function obj = PlotTask()
@@ -43,13 +43,13 @@ classdef PlotTask < Task
                 plot(context.t, context.y_fit, ...
                     'r--', 'LineWidth', 1.5);
 
-                legend('Real segment', 'Curve fit');
+                legend('Original signal', 'Fitted model');
 
-                title(['Exponential fit, R^2 = ' ...
+                title(['Model fit, R^2 = ' ...
                     num2str(context.R2, '%.2f')]);
 
-                xlabel('Time (s)');
-                ylabel('Speed (rpm)');
+                xlabel('Time');
+                ylabel('Signal');
 
                 hold off;
 
