@@ -1,6 +1,6 @@
 % File: ArcTanOptions.m
 classdef arcTanOptions < options
-    %ARCTANOPTIONS Options for the arctangent divergence fitting
+    %ARCTANOPTIONS Options for the arc-tangent divergence fitting
 
     properties
         % --- Initial guesses ---

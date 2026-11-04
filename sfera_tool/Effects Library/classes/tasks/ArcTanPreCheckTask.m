@@ -1,16 +1,47 @@
 classdef ArcTanPreCheckTask < Task
-    % ArcTanPreCheckTask performs preliminary checks specific to the
-    % arc-tangent effect before fitting the model.
+    % ArcTanPreCheckTask
+    %
+    % Task responsible for performing preliminary signal checks specific
+    % to arc-tangent effect analysis.
+    %
+    % This task evaluates the signal range and its average absolute
+    % second-order finite difference to determine whether the input
+    % signal exhibits sufficient variation for arc-tangent model fitting.
+    %
+    % Signals that do not satisfy the curvature-based acceptance
+    % criterion are rejected before the fitting stage.
 
     methods
         function obj = ArcTanPreCheckTask()
-            % Initializes the task with its name.
+            % ARCTANPRECHECKTASK Constructs an arc-tangent pre-check task.
+            %
+            % Initializes the task identifier through the superclass
+            % constructor.
+
             obj = obj@Task("ArcTanPreCheckTask");
         end
 
         function ok = execute(~, context)
-            % Checks whether the input signal is suitable for arc-tangent
-            % model fitting.
+            % EXECUTE Evaluates whether the input signal is suitable
+            % for arc-tangent model fitting.
+            %
+            % INPUT:
+            %   context -> Shared EffectContext containing the
+            %              preprocessed input signal.
+            %
+            % OUTPUT:
+            %   ok -> Logical scalar indicating whether the preliminary
+            %         check was successfully completed.
+            %
+            % The method:
+            %   1. Retrieves the preprocessed signal.
+            %   2. Computes its range.
+            %   3. Computes the mean absolute second-order finite difference.
+            %   4. Compares the resulting variation indicator against
+            %      a threshold proportional to the signal range.
+            %
+            % If the signal does not satisfy the acceptance criterion,
+            % context.result is set to false.
 
             ok = false;
 
@@ -22,16 +53,19 @@ classdef ArcTanPreCheckTask < Task
             % Retrieve the preprocessed signal from the analysis context.
             y = context.y;
 
-            % Compute the signal range and its average second-order variation.
+            % Compute the signal range and average absolute
+            % second-order finite difference.
             localRange = max(y) - min(y);
             curv = mean(abs(diff(diff(y))));
 
-            % Reject signals whose curvature is too small compared to their range.
+            % Reject signals with insufficient second-order variation
+            % relative to their range.
             if curv < 0.001 * localRange
                 context.result = false;
                 return;
             end
 
+            % Mark the preliminary check as successfully completed.
             ok = true;
         end
     end

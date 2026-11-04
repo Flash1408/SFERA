@@ -1,52 +1,69 @@
 classdef (Abstract) BaseEffect < handle
     % BaseEffect
     %
-    % Abstract class representing the core structure of an "Effect"
+    % Abstract base class defining the common structure of an effect
     % within the Simulink Fault Analyzer effect analysis framework.
     %
-    % This class implements the Template Method design pattern, defining
-    % the skeleton of the analysis algorithm while delegating the definition
-    % of specific processing steps (tasks) to concrete subclasses.
+    % This class implements the Template Method design pattern by
+    % defining the general analysis workflow while delegating
+    % effect-specific operations to concrete subclasses.
     %
-    % It inherits from "handle" to ensure reference semantics:
-    % - modifications to context and properties are shared across methods.
+    % Each effect configures its own sequence of Tasks, which are
+    % executed sequentially and operate on a shared EffectContext.
     %
-    % Overall responsibilities:
-    % - orchestration of the analysis pipeline
-    % - management of execution context
-    % - configuration handling
-    % - task execution coordination
+    % BaseEffect inherits from handle to ensure reference semantics,
+    % allowing modifications to its properties and execution context
+    % to be shared across methods.
+    %
+    % Main responsibilities:
+    %   - orchestrating the effect analysis pipeline
+    %   - managing the shared execution context
+    %   - handling analysis configuration
+    %   - coordinating task execution
 
     properties (Access = protected)
-        tasks (1,:) cell    % Cell array of Task objects
-        options             % Configuration parameters; empty until set
-        context             % Shared execution context; empty until created
+        % Ordered collection of Task objects composing the pipeline.
+        tasks (1,:) cell
+
+        % Configuration parameters used during effect analysis.
+        % Empty until a valid BaseOptions object is assigned.
+        options
+
+        % Shared context containing input data and intermediate results.
+        % Created when the analysis is started.
+        context
     end
 
     methods
-
         function obj = BaseEffect()
-            % Constructor of BaseEffect
+            % BASEEFFECT Initializes the internal effect structure.
             %
-            % Initializes the internal pipeline structure.
+            % The constructor initializes an empty task collection
+            % and clears the configuration and execution context.
+            % Concrete subclasses are responsible for configuring
+            % the task pipeline.
 
             % Initialize an empty task list.
             obj.tasks = {};
 
-            % Initialize empty references.
+            % Initialize configuration and context references.
             obj.options = [];
             obj.context = [];
         end
 
         function result = analyze(obj, y, t)
-            % Main entry point of the analysis pipeline.
+            % ANALYZE Executes the effect analysis pipeline.
             %
             % INPUT:
-            %   y -> input signal
-            %   t -> time vector
+            %   y -> input signal to be analyzed.
+            %   t -> time vector corresponding to the input signal.
             %
             % OUTPUT:
-            %   result -> true if all tasks complete successfully
+            %   result -> logical scalar indicating whether the
+            %             analyzed effect has been recognized.
+            %
+            % The method initializes the execution context, configures
+            % the task pipeline, and executes its tasks sequentially.
 
             % Ensure that configuration options have been set.
             if isempty(obj.options)
@@ -68,10 +85,13 @@ classdef (Abstract) BaseEffect < handle
         end
 
         function addTask(obj, task)
-            % Adds a new task to the execution pipeline.
+            % ADDTASK Adds a task to the execution pipeline.
             %
             % INPUT:
-            %   task -> Scalar Task object to be added.
+            %   task -> scalar Task object to append to the pipeline.
+            %
+            % The task is added at the end of the collection and will
+            % be executed after all previously configured tasks.
 
             % Validate the task object.
             if ~isa(task, 'Task') || ~isscalar(task)
@@ -83,10 +103,14 @@ classdef (Abstract) BaseEffect < handle
         end
 
         function setOptions(obj, opt)
-            % Sets the configuration parameters.
+            % SETOPTIONS Assigns the configuration parameters.
             %
             % INPUT:
-            %   opt -> BaseOptions object (or derived class).
+            %   opt -> scalar BaseOptions object or instance of a
+            %          derived options class.
+            %
+            % The assigned configuration is shared with the analysis
+            % context created when analyze() is called.
 
             % Validate the options object.
             if ~isa(opt, 'BaseOptions') || ~isscalar(opt)
@@ -96,27 +120,31 @@ classdef (Abstract) BaseEffect < handle
 
             obj.options = opt;
         end
-
     end
 
     methods (Access = protected)
-
         function result = executeTasks(obj)
-            % Executes all configured tasks sequentially.
+            % EXECUTETASKS Executes the configured tasks sequentially.
             %
             % OUTPUT:
-            %   result -> true if every task succeeds,
-            %             false otherwise.
+            %   result -> logical scalar indicating whether the
+            %             analyzed effect has been recognized.
             %
-            % The final result is also stored in context.result.
+            % Each task must return a logical scalar indicating whether
+            % its execution completed successfully.
+            %
+            % If a task fails, execution stops immediately and the
+            % analysis result is set to false.
+            %
+            % If all tasks complete successfully, the final analysis
+            % result is retrieved from the shared execution context.
 
+            % Assume successful execution until a task reports otherwise.
             result = true;
 
             % Execute each task in the configured pipeline.
             for i = 1:numel(obj.tasks)
-
                 currentTask = obj.tasks{i};
-
                 ok = currentTask.execute(obj.context);
 
                 % Ensure that each task returns a logical scalar.
@@ -125,35 +153,58 @@ classdef (Abstract) BaseEffect < handle
                         'Each task must return a logical scalar.');
                 end
 
-                % Stop immediately if one task fails.
+                % Stop immediately if a task fails to execute.
                 if ~ok
                     result = false;
                     obj.context.result = false;
                     return;
                 end
-
             end
 
             % Retrieve the final analysis result from the shared context.
             result = obj.context.result;
         end
+    end
 
+    methods (Abstract)
+        % GETMODEL Returns the mathematical model associated with the effect.
+        %
+        % OUTPUT:
+        %   model -> function handle representing the effect model.
+        %
+        % Concrete Effect subclasses must implement this method.
+
+        model = getModel(obj);
+
+        % GETINITIALPARAMS Computes the initial model parameters.
+        %
+        % INPUT:
+        %   y   -> input signal used for parameter initialization.
+        %   opt -> effect-specific configuration object.
+        %
+        % OUTPUT:
+        %   params0 -> initial parameter vector for model fitting.
+        %
+        % Concrete Effect subclasses must implement this method.
+
+        params0 = getInitialParams(obj, y, opt);
     end
 
     methods (Abstract, Access = protected)
-        % Configure the task pipeline.
+        % CONFIGURETASKS Defines the sequence of tasks composing the
+        % effect analysis pipeline.
         %
         % Concrete Effect subclasses must implement this method to
-        % define the sequence of tasks composing the analysis.
+        % specify their own analysis workflow.
         %
         % Example:
         %   ExpEffect:
         %       PreprocessTask
-        %       FitTask
-        %       ComputeR2Task
-        %       ThresholdTask
+        %       FitModelTask
+        %       R2ComputationTask
+        %       PostCheckTask
         %       PlotTask
+
         configureTasks(obj);
     end
-
 end

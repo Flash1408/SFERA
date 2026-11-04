@@ -3,40 +3,60 @@ classdef EffectContext < handle
     %
     % Shared data container for the effect execution pipeline.
     %
-    % This class stores all data required during the execution of an effect.
-    % It is passed to each Task, allowing them to:
-    %   - read input data
-    %   - write intermediate results
-    %   - update final outputs
+    % This class stores the input data, configuration parameters, and
+    % intermediate results required during effect analysis.
     %
-    % All tasks operate on the same context instance.
+    % The same context instance is passed to every Task, allowing them
+    % to:
+    %   - access the input signal and time vector
+    %   - retrieve the effect configuration
+    %   - store intermediate fitting results
+    %   - update the final analysis result
+    %
+    % EffectContext inherits from handle so that all tasks operate on
+    % the same shared data instance.
 
     properties
-        % Input data (column vectors)
+        % Input signal and corresponding time samples (column vectors).
         y (:,1) double
         t (:,1) double
 
-        % Model definition (assigned when needed)
+        % Model function used for parameter estimation.
         model
 
-        % Parameters and intermediate results
+        % Initial and fitted model parameters.
         params0 double
         params_fit double
+
+        % Signal estimated using the fitted model.
         y_fit double
 
-        % Goodness-of-fit metric
+        % Coefficient of determination of the fitted model.
         R2 (1,1) double
 
-        % Execution result
+        % Indicates whether the analyzed effect has been recognized.
         result (1,1) logical
 
-        % Configuration
+        % Configuration parameters shared among pipeline tasks.
         options (1,1) BaseOptions
     end
 
     methods
         function obj = EffectContext(y, t, options)
-            % Validate input data
+            % EFFECTCONTEXT Initializes the shared analysis context.
+            %
+            % INPUT:
+            %   y       -> input signal represented as a double vector.
+            %   t       -> time vector containing the corresponding
+            %              sampling instants.
+            %   options -> scalar BaseOptions object containing the
+            %              configuration parameters for the analysis.
+            %
+            % The constructor validates the input data, converts the
+            % signal and time vectors into column vectors, and initializes
+            % the fields that will be populated during task execution.
+
+            % Validate input data.
             if ~isa(y, 'double') || ~isvector(y) || ...
                     ~isa(t, 'double') || ~isvector(t)
                 error("EffectContext:InvalidInput", ...
@@ -53,14 +73,14 @@ classdef EffectContext < handle
                     "Options must be a scalar BaseOptions object.");
             end
 
-            % Standardize input data as column vectors
+            % Standardize input data as column vectors.
             obj.y = y(:);
             obj.t = t(:);
 
-            % Store configuration
+            % Store configuration parameters.
             obj.options = options;
 
-            % Initialize optional fields
+            % Initialize fields populated during task execution.
             obj.model = [];
             obj.params0 = [];
             obj.params_fit = [];

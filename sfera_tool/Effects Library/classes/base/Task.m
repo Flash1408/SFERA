@@ -3,39 +3,45 @@ classdef (Abstract) Task < handle
     %
     % Abstract base class for all execution steps in an effect pipeline.
     %
-    % This class defines the interface that all concrete tasks must
-    % implement. Each task represents a single operation in the analysis
-    % workflow (e.g., preprocessing, model fitting, validation, plotting).
+    % This class defines the common interface that all concrete tasks
+    % must implement. Each task performs a specific operation in the
+    % analysis workflow, such as preprocessing, model fitting,
+    % validation, or plotting.
     %
-    % Task inherits from handle so that all task objects exhibit reference
-    % semantics and operate consistently on the shared EffectContext.
+    % Task inherits from handle so that all task objects exhibit
+    % reference semantics and can operate on the shared EffectContext.
 
     properties (Access = protected)
-        % Identifier of the task.
+        % Name identifying the task within the execution pipeline.
         name (1,1) string = ""
     end
 
     methods
         function obj = Task(name)
-            % Constructor of Task.
+            % TASK Constructs a task object.
             %
             % INPUT:
-            %   name -> task identifier.
-            if nargin > 0 
-                obj.name = name; 
+            %   name -> optional string identifying the task.
+            %
+            % OUTPUT:
+            %   obj  -> initialized Task object.
+
+            if nargin > 0
+                obj.name = name;
             end
         end
     end
 
     methods (Abstract)
-        % Execute the task.
+        % Execute the task using the shared analysis context.
         %
         % INPUT:
-        %   context -> EffectContext shared among all tasks.
+        %   context -> EffectContext shared among all pipeline tasks.
         %
         % OUTPUT:
-        %   ok -> true if the task completes successfully, false otherwise.
+        %   ok -> logical scalar indicating whether the task completed
+        %         successfully. This does not necessarily indicate
+        %         whether the analyzed effect was recognized.
         ok = execute(obj, context)
     end
-
 end

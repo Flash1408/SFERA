@@ -1,38 +1,64 @@
 classdef PlotTask < Task
-    % PlotTask is responsible for visualizing the results of signal
-    % analysis when plotting is enabled.
+    % PlotTask
     %
-    % It displays the original signal and the fitted model, including
-    % the computed R-squared value in the plot title.
-    % Plotting is optional and must not affect the numerical result.
+    % Task responsible for visualizing the results of effect analysis.
+    %
+    % When plotting is enabled through the analysis options, this task
+    % displays the original signal together with the fitted model and
+    % reports the coefficient of determination (R-squared).
+    %
+    % Plotting is optional and does not affect the numerical analysis
+    % result. Any plotting failure is reported as a warning without
+    % invalidating an otherwise completed analysis.
 
     methods
 
         function obj = PlotTask()
+            % PLOTTASK Constructs a plotting task.
+            %
+            % Initializes the task identifier through the superclass
+            % constructor.
+
             obj = obj@Task("PlotTask");
         end
 
         function ok = execute(~, context)
-            % Validates the shared context before accessing its data.
+            % EXECUTE Generates a plot of the original and fitted signals.
+            %
+            % INPUT:
+            %   context -> Shared EffectContext containing the original
+            %              signal, fitted signal, time vector, R-squared
+            %              value and analysis options.
+            %
+            % OUTPUT:
+            %   ok -> Logical scalar indicating whether the plotting task
+            %         completed its execution.
+            %
+            % The method:
+            %   1. Validates the analysis context.
+            %   2. Checks whether plotting is enabled.
+            %   3. Displays the original signal and fitted model.
+            %   4. Includes the R-squared value in the plot title.
+            %
+            % If plotting is disabled, no figure is generated.
+            % If plotting fails, a warning is issued and the numerical
+            % analysis result remains unchanged.
 
+            % Validate the shared analysis context.
             if ~isa(context, 'EffectContext') || ~isscalar(context)
                 error('PlotTask:InvalidContext', ...
                     'The context must be a scalar EffectContext object.');
             end
 
-            % Plotting is skipped when visualization is disabled.
-            % The numerical analysis result remains unchanged.
-
+            % Mark the task as successfully executed.
             ok = true;
 
+            % Skip visualization when plotting is disabled.
             if ~context.options.showPlot
                 return;
             end
 
-            % Generates the plot without changing the analysis result.
-            % A plotting failure is reported as a warning and does not
-            % invalidate an otherwise completed numerical analysis.
-
+            % Generate the plot without modifying the analysis result.
             try
                 figure;
 
@@ -54,6 +80,8 @@ classdef PlotTask < Task
                 hold off;
 
             catch ME
+                % Report plotting failures without invalidating the
+                % numerical analysis result.
                 warning('PlotTask:PlotFailed', ...
                     ['Unable to generate the plot. ' ...
                      'The numerical result is unchanged. ' ...
