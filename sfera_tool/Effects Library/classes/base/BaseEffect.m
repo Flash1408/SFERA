@@ -120,6 +120,23 @@ classdef (Abstract) BaseEffect < handle
 
             obj.options = opt;
         end
+
+        function context = getContext(obj)
+            % GETCONTEXT Returns the context of the most recent analysis.
+            %
+            % OUTPUT:
+            %   context -> EffectContext object containing the input data,
+            %              intermediate results and diagnostic information.
+            %
+            % An error is raised if no analysis has been performed yet.
+
+            if isempty(obj.context)
+                error('BaseEffect:MissingContext', ...
+                    'No analysis context is available. Call analyze() first.');
+            end
+
+            context = obj.context;
+        end
     end
 
     methods (Access = protected)

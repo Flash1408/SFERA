@@ -25,6 +25,10 @@ classdef BaseOptions < handle
 
         % Maximum number of iterations allowed in optimization procedures.
         maxIter (1,1) double
+
+        % Maximum number of objective function evaluations allowed
+        % during optimization procedures.
+        maxFunEvals (1,1) double
     end
 
     methods
@@ -38,6 +42,7 @@ classdef BaseOptions < handle
             obj.showPlot = false;
             obj.tolFun = 1e-6;
             obj.maxIter = 1000;
+            obj.maxFunEvals = 5000;
         end
     end
 end

@@ -34,6 +34,11 @@ classdef EffectContext < handle
         % Coefficient of determination of the fitted model.
         R2 (1,1) double
 
+        % Diagnostic information returned by the fitting solver.
+        fitExitFlag double
+        fitOutput struct
+        fitError string
+
         % Indicates whether the analyzed effect has been recognized.
         result (1,1) logical
 
@@ -86,6 +91,9 @@ classdef EffectContext < handle
             obj.params_fit = [];
             obj.y_fit = [];
             obj.R2 = NaN;
+            obj.fitExitFlag = NaN;
+            obj.fitOutput = struct();
+            obj.fitError = "";
             obj.result = false;
         end
     end

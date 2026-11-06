@@ -50,6 +50,13 @@ classdef PostCheckTask < Task
                     'The context must be a scalar EffectContext object.');
             end
 
+            if ~isa(context.options, 'BaseOptions') || ...
+                    ~isscalar(context.options)
+
+                error('PostCheckTask:InvalidOptions', ...
+                    'The context must contain a scalar BaseOptions object.');
+            end
+
             r2 = context.R2;
             threshold = context.options.threshold;
 

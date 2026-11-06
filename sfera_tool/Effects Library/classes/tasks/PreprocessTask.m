@@ -42,25 +42,51 @@ classdef PreprocessTask < Task
             % EXECUTE Preprocesses the input signal stored in the context.
             %
             % INPUT:
-            %   context -> Shared EffectContext containing the signal,
-            %              time vector and analysis configuration.
+            %   context -> Scalar EffectContext object containing the input
+            %              signal and corresponding time vector.
             %
             % OUTPUT:
             %   ok -> Logical scalar indicating whether preprocessing
             %         completed successfully.
             %
             % The method:
-            %   1. Converts signal and time data into column vectors.
-            %   2. Checks that both vectors contain the same number
-            %      of samples.
-            %   3. Removes samples with non-finite signal or time values.
-            %   4. Checks the minimum number of remaining samples.
+            %   1. Validates the analysis context and preprocessing configuration.
+            %   2. Checks that signal and time data are non-empty numeric
+            %      real vectors.
+            %   3. Converts signal and time data into column vectors.
+            %   4. Checks that both vectors contain the same number of samples.
+            %   5. Removes samples with non-finite signal or time values.
+            %   6. Checks the minimum number of remaining valid samples.
             %
-            % If preprocessing fails, context.result is set to false.
+            % If the input data are invalid or preprocessing cannot be
+            % completed, context.result is set to false.
+
+            if ~isa(context, 'EffectContext') || ~isscalar(context)
+                error('PreprocessTask:InvalidContext', ...
+                    'The context must be a scalar EffectContext object.');
+            end
+
+            if ~isfinite(obj.minSamples) || ...
+                    obj.minSamples < 1 || ...
+                    fix(obj.minSamples) ~= obj.minSamples
+
+                error('PreprocessTask:InvalidMinSamples', ...
+                    'The minimum number of samples must be a positive integer.');
+            end
 
             ok = true;
 
             % 1. Normalize input format (column vectors).
+            if ~isnumeric(context.y) || isempty(context.y) || ...
+                ~isvector(context.y) || ~isreal(context.y) || ...
+                ~isnumeric(context.t) || isempty(context.t) || ...
+                ~isvector(context.t) || ~isreal(context.t)
+
+                context.result = false;
+                ok = false;
+                return;
+            end
+
             context.y = context.y(:);
             context.t = context.t(:);
 

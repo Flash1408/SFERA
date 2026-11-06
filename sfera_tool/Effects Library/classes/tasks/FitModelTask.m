@@ -2,19 +2,26 @@ classdef FitModelTask < Task
     % FitModelTask
     %
     % Task responsible for estimating the parameters of an effect model
-    % using nonlinear least-squares optimization.
+    % through bounded nonlinear least-squares optimization.
     %
-    % This task retrieves the model function and its initial parameter
-    % estimates from the corresponding BaseEffect object, performs the
-    % fitting procedure using the bounds and solver configuration stored
-    % in EffectContext, and stores the resulting estimates in the shared
-    % context.
+    % This task retrieves the model function and initial parameter
+    % estimates from the corresponding BaseEffect object, validates the
+    % fitting configuration, and executes the optimization procedure
+    % using the solver options and parameter bounds stored in EffectContext.
+    %
+    % After a successful optimization, the fitted model is evaluated at
+    % the input time samples and the resulting parameters and estimated
+    % signal are stored in the shared context.
+    %
+    % Solver termination information and fitting errors are also stored
+    % in EffectContext to support diagnostic inspection.
     %
     % The fitting results are made available to subsequent tasks for
-    % goodness-of-fit evaluation and effect validation.
+    % goodness-of-fit computation and effect validation.
 
     properties (Access = private)
-        % Effect object providing the model and initial parameter estimates.
+        % BaseEffect object providing the model function and initial
+        % parameter estimates required by the fitting procedure.
         effect
     end
 
@@ -26,8 +33,9 @@ classdef FitModelTask < Task
             %   effect -> Scalar BaseEffect object providing the model
             %             function and initial parameter estimates.
             %
-            % The constructor validates and stores the effect object
-            % required by the fitting procedure.
+            % The constructor initializes the task identifier and
+            % validates the effect object required by the fitting
+            % procedure.
 
             obj = obj@Task("FitModelTask");
 
@@ -43,23 +51,32 @@ classdef FitModelTask < Task
             % EXECUTE Estimates the parameters of the effect model.
             %
             % INPUT:
-            %   context -> Shared EffectContext containing the input
-            %              signal, time vector and fitting options.
+            %   context -> Scalar EffectContext object containing the
+            %              input signal, time vector and fitting options.
             %
             % OUTPUT:
-            %   ok -> Logical scalar indicating whether model fitting
+            %   ok -> Logical scalar indicating whether the fitting task
             %         completed successfully.
             %
             % The method:
             %   1. Validates the analysis context and fitting options.
             %   2. Retrieves the model and initial parameters from the effect.
             %   3. Validates the initial parameters and optimization bounds.
-            %   4. Configures and executes the nonlinear least-squares solver.
-            %   5. Evaluates the fitted model at the input time samples.
-            %   6. Stores the fitting results in the shared context.
+            %   4. Validates the solver configuration.
+            %   5. Configures and executes the nonlinear least-squares solver.
+            %   6. Checks the solver termination status and stores diagnostic
+            %      information in the shared context.
+            %   7. Evaluates the fitted model at the input time samples.
+            %   8. Validates and stores the fitting results in the context.
             %
-            % If fitting fails or produces non-finite results,
-            % context.result is set to false.
+            % The task is considered successful only if the solver
+            % terminates with a positive exit flag and the fitted model
+            % produces a valid output signal.
+            %
+            % If the solver does not converge or the fitting procedure
+            % fails, context.result is set to false. Solver diagnostics
+            % and fitting errors are preserved in EffectContext whenever
+            % available.
 
             ok = false;
 
@@ -103,7 +120,8 @@ classdef FitModelTask < Task
             params0 = obj.effect.getInitialParams(y, opt);
 
             % Validate the initial parameters and optimization bounds.
-            % All three vectors must be numeric and have the same number of elements.
+            % All three vectors must be numeric and have the same number
+            % of elements.
             if ~isnumeric(params0) || ~isvector(params0) || isempty(params0) || ...
                     ~isnumeric(opt.lb) || ~isvector(opt.lb) || ...
                     ~isnumeric(opt.ub) || ~isvector(opt.ub) || ...
@@ -133,11 +151,16 @@ classdef FitModelTask < Task
             end
 
             % Validate the solver configuration parameters.
+            % Tolerances must be positive, while iteration and function
+            % evaluation limits must be positive integer values.
             if ~isnumeric(opt.tolFun) || ~isscalar(opt.tolFun) || ...
                     ~isfinite(opt.tolFun) || opt.tolFun <= 0 || ...
                     ~isnumeric(opt.maxIter) || ~isscalar(opt.maxIter) || ...
                     ~isfinite(opt.maxIter) || opt.maxIter < 1 || ...
-                    fix(opt.maxIter) ~= opt.maxIter
+                    fix(opt.maxIter) ~= opt.maxIter || ...
+                    ~isnumeric(opt.maxFunEvals) || ~isscalar(opt.maxFunEvals) || ...
+                    ~isfinite(opt.maxFunEvals) || opt.maxFunEvals < 1 || ...
+                    fix(opt.maxFunEvals) ~= opt.maxFunEvals
 
                 error('FitModelTask:InvalidOptions', ...
                     'Solver tolerances and iteration limits must contain valid values.');
@@ -147,18 +170,39 @@ classdef FitModelTask < Task
             solverOptions = optimoptions('lsqcurvefit', ...
                 'Display', 'off', ...
                 'TolFun', opt.tolFun, ...
-                'MaxIterations', opt.maxIter);
+                'MaxIterations', opt.maxIter, ...
+                'MaxFunctionEvaluations', opt.maxFunEvals);
 
             try
                 % Estimate the model parameters within the specified bounds.
-                paramsFit = lsqcurvefit( ...
+                [paramsFit, ~, ~, exitflag, output] = lsqcurvefit( ...
                     model, params0, t, y, ...
                     opt.lb, opt.ub, solverOptions);
+
+                % Store solver termination information for diagnostics.
+                context.fitExitFlag = exitflag;
+                context.fitOutput = output;
+
+                % Reject the fitting if the solver did not converge.
+                if exitflag <= 0
+                    context.result = false;
+                    return;
+                end
 
                 % Evaluate the fitted model at the input time samples.
                 yFit = model(paramsFit, t);
 
-                if any(~isfinite(paramsFit)) || any(~isfinite(yFit))
+                % Ensure that the fitted signal is a real numeric vector.
+                if ~isnumeric(yFit) || ~isreal(yFit) || ~isvector(yFit)
+                    context.result = false;
+                    return;
+                end
+
+                % Ensure that the fitted parameters and signal contain
+                % only finite values and that the signal has the expected
+                % number of samples.
+                if numel(yFit) ~= numel(y) || ...
+                        any(~isfinite(paramsFit)) || any(~isfinite(yFit))
                     context.result = false;
                     return;
                 end
@@ -171,7 +215,10 @@ classdef FitModelTask < Task
 
                 ok = true;
 
-            catch
+            catch ME
+                % Store the fitting error for diagnostic purposes.
+                context.fitError = string(ME.message);
+
                 % Report fitting failure through the task result.
                 context.result = false;
                 return;

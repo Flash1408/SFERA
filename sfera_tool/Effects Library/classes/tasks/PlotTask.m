@@ -50,6 +50,13 @@ classdef PlotTask < Task
                     'The context must be a scalar EffectContext object.');
             end
 
+            if ~isa(context.options, 'BaseOptions') || ...
+                    ~isscalar(context.options)
+
+                error('PlotTask:InvalidOptions', ...
+                    'The context must contain a scalar BaseOptions object.');
+            end
+
             % Mark the task as successfully executed.
             ok = true;
 
