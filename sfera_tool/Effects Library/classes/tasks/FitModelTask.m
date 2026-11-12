@@ -143,11 +143,17 @@ classdef FitModelTask < Task
             end
 
             % Verify that the initial parameters satisfy the specified bounds.
+            % An invalid fitting configuration is reported as a fitting failure,
+            % rather than interrupting the entire effect analysis.
+
             if any(opt.lb > opt.ub) || ...
                     any(params0 < opt.lb) || any(params0 > opt.ub)
 
-                error('FitModelTask:InvalidParameters', ...
-                    'Initial parameters must lie within the specified bounds.');
+                context.fitError = ...
+                    "Initial parameters must lie within the specified bounds.";
+
+                context.result = false;
+                return;
             end
 
             % Validate the solver configuration parameters.
