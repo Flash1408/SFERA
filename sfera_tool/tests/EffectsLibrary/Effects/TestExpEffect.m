@@ -1,4 +1,3 @@
-
 classdef TestExpEffect < matlab.unittest.TestCase
     % TestExpEffect
     %
