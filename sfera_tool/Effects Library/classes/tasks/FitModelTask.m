@@ -117,7 +117,7 @@ classdef FitModelTask < Task
             end
 
             % Compute the initial parameters for the fitting procedure.
-            params0 = obj.effect.getInitialParams(y, opt);
+            params0 = obj.effect.getInitialParams(y, t, opt);
 
             % Validate the initial parameters and optimization bounds.
             % All three vectors must be numeric and have the same number

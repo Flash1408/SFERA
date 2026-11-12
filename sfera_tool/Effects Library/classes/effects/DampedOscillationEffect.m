@@ -29,12 +29,12 @@ classdef DampedOscillationEffect < BaseEffect
             %   p(3) -> omega: angular frequency.
             %   p(4) -> phi: phase shift.
             %   p(5) -> C: vertical offset.
-    
+
             model = @(p,t) p(1) .* exp(p(2) .* t) .* ...
                 cos(p(3) .* t + p(4)) + p(5);
         end
 
-        function params0 = getInitialParams(~, y, opt)
+        function params0 = getInitialParams(~, y, t, opt)
             % GETINITIALPARAMS Computes the initial damped oscillation parameters.
             %
             % INPUT:

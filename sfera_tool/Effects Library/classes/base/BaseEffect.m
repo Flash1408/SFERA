@@ -197,6 +197,7 @@ classdef (Abstract) BaseEffect < handle
         %
         % INPUT:
         %   y   -> input signal used for parameter initialization.
+        %   t   -> time vector corresponding to the input signal.
         %   opt -> effect-specific configuration object.
         %
         % OUTPUT:
@@ -204,7 +205,7 @@ classdef (Abstract) BaseEffect < handle
         %
         % Concrete Effect subclasses must implement this method.
 
-        params0 = getInitialParams(obj, y, opt);
+        params0 = getInitialParams(obj, y, t, opt);
     end
 
     methods (Abstract, Access = protected)

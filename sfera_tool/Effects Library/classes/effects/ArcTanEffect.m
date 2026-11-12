@@ -32,7 +32,7 @@ classdef ArcTanEffect < BaseEffect
             model = @(p,t) p(1) * atan((t - p(2)) / p(3)) + p(4);
         end
 
-        function params0 = getInitialParams(~, ~, opt)
+        function params0 = getInitialParams(~, y, t, opt)
             % GETINITIALPARAMS Retrieves the initial arc-tangent parameters.
             %
             % INPUT:
