@@ -38,8 +38,7 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             result = effect.analyze(y, t);
 
             % Assert: the signal should be recognized.
-            testCase.verifyTrue(result, ...
-                'A valid damped oscillation signal should be recognized.');
+            testCase.verifyTrue(result);
         end
 
 
@@ -59,8 +58,7 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             result = effect.analyze(y, t);
 
             % Assert: preprocessing should reject the signal.
-            testCase.verifyFalse(result, ...
-                'A signal with fewer than five samples should be rejected.');
+            testCase.verifyFalse(result);
         end
 
 
@@ -82,8 +80,7 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
 
             % Assert: the signal should not be classified as
             % a damped oscillation.
-            testCase.verifyFalse(result, ...
-                'A signal with fewer than three valid peaks should be rejected.');
+            testCase.verifyFalse(result);
         end
 
 
@@ -111,9 +108,7 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
 
             % Assert: the remaining valid samples should still allow
             % recognition of the damped oscillation.
-            testCase.verifyTrue(result, ...
-                ['The effect should handle non-finite samples ', ...
-                 'through preprocessing.']);
+            testCase.verifyTrue(result);
         end
 
 
@@ -142,11 +137,9 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             taskOk = task.execute(context);
 
             % Assert: the task completes, but rejects the fitted model.
-            testCase.verifyTrue(taskOk, ...
-                'The post-check task should complete successfully.');
+            testCase.verifyTrue(taskOk);
 
-            testCase.verifyFalse(context.result, ...
-                'The fitted model should be rejected due to insufficient amplitude.');
+            testCase.verifyFalse(context.result);
 
             % Case 2: non-negative damping coefficient.
             context = EffectContext(y, t, opt);
@@ -157,11 +150,9 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             taskOk = task.execute(context);
 
             % Assert: the fitted model should be rejected.
-            testCase.verifyTrue(taskOk, ...
-                'The post-check task should complete successfully.');
+            testCase.verifyTrue(taskOk);
 
-            testCase.verifyFalse(context.result, ...
-                'The fitted model should be rejected due to non-negative damping.');
+            testCase.verifyFalse(context.result);
 
             % Case 3: insufficient angular frequency.
             context = EffectContext(y, t, opt);
@@ -172,11 +163,9 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             taskOk = task.execute(context);
 
             % Assert: the fitted model should be rejected.
-            testCase.verifyTrue(taskOk, ...
-                'The post-check task should complete successfully.');
+            testCase.verifyTrue(taskOk);
 
-            testCase.verifyFalse(context.result, ...
-                'The fitted model should be rejected due to insufficient frequency.');
+            testCase.verifyFalse(context.result);
         end
 
 
@@ -213,11 +202,9 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             resultWithPlot = effect2.analyze(y, t);
 
             % Assert: plotting must not affect the numerical result.
-            testCase.verifyEqual(resultWithPlot, resultWithoutPlot, ...
-                'Plotting should not change the numerical analysis result.');
+            testCase.verifyEqual(resultWithPlot, resultWithoutPlot);
 
-            testCase.verifyTrue(resultWithoutPlot, ...
-                'The test signal should be recognized successfully.');
+            testCase.verifyTrue(resultWithoutPlot);
 
             % The cleanup object closes only figures created by this test.
             clear cleanup;
@@ -247,11 +234,9 @@ classdef TestDampedOscillationEffect < matlab.unittest.TestCase
             taskOk = task.execute(context);
 
             % Assert: the task completes but preserves the rejection.
-            testCase.verifyTrue(taskOk, ...
-                'The post-check task should complete successfully.');
+            testCase.verifyTrue(taskOk);
 
-            testCase.verifyFalse(context.result, ...
-                'The task must preserve a rejection from an earlier check.');
+            testCase.verifyFalse(context.result);
         end
 
     end

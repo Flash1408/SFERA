@@ -161,37 +161,45 @@ classdef TestArcTanEffect < matlab.unittest.TestCase
             % Verifies that enabling optional plotting does not affect
             % the numerical outcome of arc-tangent effect classification.
             %
-            % The same signal is analyzed independently with plotting
-            % disabled and enabled. Both executions must produce the
-            % same successful classification.
-
+            % The same signal is analyzed with plotting disabled and
+            % enabled. Both executions must produce the same classification.
+        
             % Arrange: generate a valid arc-tangent signal.
             t = linspace(0, 1, 30)';
             y = 2 * atan((t - 0.5) / 0.2) + 1;
-
+        
+            % Keep track of existing figures to avoid closing figures
+            % that were already open before the test execution.
+            existingFigures = findall(groot, 'Type', 'figure');
+            cleanup = onCleanup(@() close(setdiff( ...
+                findall(groot, 'Type', 'figure'), existingFigures)));
+        
             % Configure the first effect with plotting disabled.
             optWithoutPlot = ArcTanOptions();
             optWithoutPlot.showPlot = false;
-
+        
             effectWithoutPlot = ArcTanEffect();
             effectWithoutPlot.setOptions(optWithoutPlot);
-
+        
             % Act: analyze the signal without plotting.
             resultWithoutPlot = effectWithoutPlot.analyze(y, t);
-
+        
             % Configure the second effect with plotting enabled.
             optWithPlot = ArcTanOptions();
             optWithPlot.showPlot = true;
-
+        
             effectWithPlot = ArcTanEffect();
             effectWithPlot.setOptions(optWithPlot);
-
+        
             % Act: analyze the same signal with plotting enabled.
             resultWithPlot = effectWithPlot.analyze(y, t);
-
+        
             % Assert: plotting must not change the classification.
             testCase.verifyEqual(resultWithPlot, resultWithoutPlot);
             testCase.verifyTrue(resultWithPlot);
+        
+            % Close only the figures created during this test.
+            clear cleanup;
         end
 
     end

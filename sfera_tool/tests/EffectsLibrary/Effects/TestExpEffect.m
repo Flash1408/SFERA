@@ -76,7 +76,31 @@ classdef TestExpEffect < matlab.unittest.TestCase
             % Assert: the constant signal must be rejected.
             testCase.verifyFalse(result);
         end
+        
+        function testParabolicSignalRejected(testCase)
+            % Verifies that a parabolic signal is not incorrectly
+            % classified as an exponential effect.
+            %
+            % A quadratic signal is used to verify that ExpEffect
+            % distinguishes polynomial behavior from exponential behavior.
 
+            % Arrange: generate a parabolic signal.
+            t = linspace(0, 10, 100)';
+            y = 2 * t.^2 + 3 * t + 1;
+
+            opt = ExpOptions();
+
+            effect = ExpEffect();
+            effect.setOptions(opt);
+
+            % Act: analyze the parabolic signal.
+            result = effect.analyze(y, t);
+
+            % Assert: the parabolic signal must not be classified
+            % as an exponential effect.
+            testCase.verifyFalse(result);
+        end
+        
         function testInsufficientSamples(testCase)
             % Verifies that signals containing fewer than five samples
             % are rejected before model fitting.
@@ -196,26 +220,35 @@ classdef TestExpEffect < matlab.unittest.TestCase
             % The same signal is analyzed with plotting disabled and
             % enabled. Both executions are expected to produce the
             % same classification result.
-
+        
             % Arrange: generate a valid exponential signal.
             t = (0:9)';
             y = 2 + 5 * exp(-0.3 * t);
-
+        
+            % Keep track of existing figures to avoid closing figures
+            % that were already open before the test execution.
+            existingFigures = findall(groot, 'Type', 'figure');
+            cleanup = onCleanup(@() close(setdiff( ...
+                findall(groot, 'Type', 'figure'), existingFigures)));
+        
             opt = ExpOptions();
             effect = ExpEffect();
             effect.setOptions(opt);
-
+        
             % Act: analyze the signal with plotting disabled.
             opt.showPlot = false;
             resultWithoutPlot = effect.analyze(y, t);
-
+        
             % Act: analyze the same signal with plotting enabled.
             opt.showPlot = true;
             resultWithPlot = effect.analyze(y, t);
-
+        
             % Assert: plotting must not change the classification.
             testCase.verifyEqual(resultWithPlot, resultWithoutPlot);
             testCase.verifyTrue(resultWithPlot);
+        
+            % Close only the figures created during this test.
+            clear cleanup;
         end
 
         function testR2EqualToThreshold(testCase)
