@@ -56,7 +56,13 @@ classdef PostCheckTask < Task
                 error('PostCheckTask:InvalidOptions', ...
                     'The context must contain a scalar BaseOptions object.');
             end
-
+            
+            % Preserve a negative result established by a previous task.
+            if ~context.result
+                ok = true;
+                return;
+            end
+            
             r2 = context.R2;
             threshold = context.options.threshold;
 
