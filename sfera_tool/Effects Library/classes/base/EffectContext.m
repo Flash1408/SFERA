@@ -31,8 +31,21 @@ classdef EffectContext < handle
         % Signal estimated using the fitted model.
         y_fit double
 
+        % Indicates whether the signal satisfies the preliminary
+        % requirements for attempting curve fitting.
+        fitEligible (1,1) logical
+
         % Coefficient of determination of the fitted model.
         R2 (1,1) double
+
+        % Single-sided amplitude spectrum computed through FFT.
+        spectrum double
+
+        % Normalized frequency axis associated with the spectrum.
+        frequencies double
+
+        % Spectral dominance ratio computed from the single-sided FFT spectrum.
+        spectralRatio (1,1) double
 
         % Diagnostic information returned by the fitting solver.
         fitExitFlag double
@@ -90,7 +103,11 @@ classdef EffectContext < handle
             obj.params0 = [];
             obj.params_fit = [];
             obj.y_fit = [];
+            obj.fitEligible = true;
             obj.R2 = NaN;
+            obj.spectrum = [];
+            obj.frequencies = [];
+            obj.spectralRatio = NaN;
             obj.fitExitFlag = NaN;
             obj.fitOutput = struct();
             obj.fitError = "";
