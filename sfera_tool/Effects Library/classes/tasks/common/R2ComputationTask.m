@@ -55,6 +55,15 @@ classdef R2ComputationTask < Task
                     'The context must be a scalar EffectContext object.');
             end
 
+            % Skip R-squared computation when model fitting was
+            % intentionally disabled by a preceding analysis task.
+            % This represents a valid signal rejection condition,
+            % not a task execution failure.
+            if ~context.fitEligible
+                ok = true;
+                return;
+            end
+
             y = context.y;
             yFit = context.y_fit;
 

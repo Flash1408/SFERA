@@ -85,6 +85,14 @@ classdef FitModelTask < Task
                     'The context must be a scalar EffectContext object.');
             end
 
+            % Skip model fitting when the preceding analysis tasks
+            % have determined that the signal is not eligible for fitting.
+            % This represents a valid rejection condition, not a task failure.
+            if ~context.fitEligible
+                ok = true;
+                return;
+            end
+
             if ~isa(context.options, 'BaseOptions') || ...
                     ~isscalar(context.options)
                 error('FitModelTask:InvalidOptions', ...

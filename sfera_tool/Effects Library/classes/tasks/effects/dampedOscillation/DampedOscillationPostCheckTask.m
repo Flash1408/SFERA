@@ -55,6 +55,14 @@ classdef DampedOscillationPostCheckTask < Task
                     'The context must be a scalar EffectContext object.');
             end
 
+            % Preserve a rejection made by a preceding analysis task.
+            % No fitted parameters are available when model fitting
+            % has been skipped because the signal was not eligible.
+            if ~context.result
+                ok = true;
+                return;
+            end
+
             if ~isnumeric(context.params_fit) || ...
                     ~isvector(context.params_fit) || ...
                     numel(context.params_fit) ~= 5 || ...
@@ -75,10 +83,9 @@ classdef DampedOscillationPostCheckTask < Task
             localRange = max(context.y) - min(context.y);
 
             % Reject the effect if any model-specific condition is not satisfied.
-            if context.result && ...
-                    (abs(A_fit) < 0.05 * localRange || ...
+            if abs(A_fit) < 0.05 * localRange || ...
                     beta_fit >= 0 || ...
-                    omega_fit < 0.5 - 1e-10)
+                    omega_fit < 0.5 - 1e-10
                 context.result = false;
             end
 

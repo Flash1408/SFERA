@@ -74,8 +74,11 @@ classdef DampedOscillationPreCheckTask < Task
             [~, peaksIdx] = findMaxPeaks(y, ampThreshold, obj.minPeakDistance);
             
             % Reject signals containing too few valid peaks.
+            % The signal is marked as ineligible for curve fitting.
             if numel(peaksIdx) < obj.minPeaks
+                context.fitEligible = false;
                 context.result = false;
+                ok = true;
                 return;
             end
 
