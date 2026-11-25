@@ -52,6 +52,9 @@ classdef EffectContext < handle
         fitOutput struct
         fitError string
 
+        % Diagnostic information returned by the custom post-check callback.
+        customPostCheckError string
+
         % Indicates whether the analyzed effect has been recognized.
         result (1,1) logical
 
@@ -111,6 +114,7 @@ classdef EffectContext < handle
             obj.fitExitFlag = NaN;
             obj.fitOutput = struct();
             obj.fitError = "";
+            obj.customPostCheckError = "";
             obj.result = false;
         end
     end
