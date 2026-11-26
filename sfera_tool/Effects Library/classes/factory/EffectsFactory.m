@@ -16,6 +16,32 @@ classdef EffectsFactory
     % The factory does not execute effect analysis.
 
     methods (Static)
+        function names = getAvailableEffectNames()
+            % GETAVAILABLEEFFECTNAMES Returns the names of predefined effects.
+            %
+            % OUTPUT:
+            %   names -> Cell array containing the names of all predefined
+            %            effects supported by the SFERA analysis framework.
+            %
+            % The returned names can be used by external components,
+            % such as the EffectDetector and the graphical interface,
+            % to identify the available predefined effects.
+            %
+            % The order represents the presentation order of the effects,
+            % not necessarily their detection priority.
+
+            names = {
+                'Exponential Divergence'
+                'Damped Oscillations'
+                'Permanent Oscillations'
+                'Divergent Oscillations'
+                'Sum of Sinusoids'
+                'Runge Trend'
+                'Arctangent Trend'
+                'Cubic Radix Trend'
+                'Fifth Radix Trend'
+                };
+        end
 
         function effect = createEffect(effectName)
             % CREATEEFFECT Creates a predefined effect.

@@ -7,11 +7,11 @@ classdef TestEffectsFactory < matlab.unittest.TestCase
     % effects, as well as the creation of custom effects.
 
     methods (Test)
-        function testCreatePredefinedEffects(testCase)
-            % TESTCREATEPREDEFINEDEFFECTS Verifies that the factory
-            % creates all predefined effects with the correct options.
+        function testGetAvailableEffectNames(testCase)
+            % TESTGETAVAILABLEEFFECTNAMES Verifies that the factory
+            % returns all predefined effect names in the expected order.
 
-            effectNames = {
+            expectedNames = {
                 'Exponential Divergence'
                 'Damped Oscillations'
                 'Permanent Oscillations'
@@ -22,6 +22,17 @@ classdef TestEffectsFactory < matlab.unittest.TestCase
                 'Cubic Radix Trend'
                 'Fifth Radix Trend'
                 };
+
+            actualNames = EffectsFactory.getAvailableEffectNames();
+
+            testCase.verifyEqual(actualNames, expectedNames);
+        end
+
+        function testCreatePredefinedEffects(testCase)
+            % TESTCREATEPREDEFINEDEFFECTS Verifies that the factory
+            % creates all predefined effects with the correct options.
+
+            effectNames = EffectsFactory.getAvailableEffectNames();
 
             expectedEffects = {
                 'ExpEffect'
